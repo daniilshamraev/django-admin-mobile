@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.3
+
+- Changelist controls share one left and right edge. The action menu and Sort by are the same full-width select with 16px of inner padding. The card no longer repeats a second “Select” label.
+
 ## 0.2.2
 
 - Tab labels no longer pick up Django’s link underline. The current tab uses a stronger pill and a bottom bar.
