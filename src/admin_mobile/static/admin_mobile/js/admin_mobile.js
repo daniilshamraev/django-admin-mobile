@@ -101,8 +101,16 @@
         if (!links.length) {
             return;
         }
-        var bar = document.createElement("div");
+        var bar = document.createElement("label");
         bar.className = "admin-mobile-sort";
+        var caption = document.createElement("span");
+        caption.textContent = root.getAttribute("data-admin-mobile-sort-label") || "Sort by";
+        var select = document.createElement("select");
+        select.setAttribute("aria-label", caption.textContent || "Sort by");
+        var placeholder = document.createElement("option");
+        placeholder.value = "";
+        placeholder.textContent = caption.textContent || "Sort by";
+        select.appendChild(placeholder);
         var seen = {};
         Array.prototype.forEach.call(links, function (link) {
             var text = cleanText(link.textContent);
@@ -111,14 +119,22 @@
                 return;
             }
             seen[text] = true;
-            var anchor = document.createElement("a");
-            anchor.setAttribute("href", href);
-            anchor.textContent = text;
-            bar.appendChild(anchor);
+            var option = document.createElement("option");
+            option.value = href;
+            option.textContent = text;
+            select.appendChild(option);
         });
-        if (bar.childNodes.length) {
-            table.insertAdjacentElement("beforebegin", bar);
+        if (select.options.length < 2) {
+            return;
         }
+        select.addEventListener("change", function () {
+            if (select.value) {
+                window.location.assign(select.value);
+            }
+        });
+        bar.appendChild(caption);
+        bar.appendChild(select);
+        table.insertAdjacentElement("beforebegin", bar);
     }
 
     function initSelectAll(table) {

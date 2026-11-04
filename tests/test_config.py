@@ -5,6 +5,7 @@ from django.test import override_settings
 from admin_mobile.conf import AdminMobileSettings, get_config
 
 
+@override_settings(ADMIN_MOBILE=None)
 def test_defaults_when_setting_missing() -> None:
     config = get_config()
     assert config == AdminMobileSettings()

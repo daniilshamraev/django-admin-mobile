@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from django.contrib import admin
 
 from admin_mobile.mixins import MobileAdminMixin
@@ -45,9 +47,10 @@ class SeriesAdmin(admin.ModelAdmin):
 
 
 @admin.register(Tag)
-class TagAdmin(admin.ModelAdmin):
+class TagAdmin(MobileAdminMixin, admin.ModelAdmin):
     search_fields = ("name",)
     prepopulated_fields = {"slug": ("name",)}
+    mobile_readonly = True
 
 
 @admin.register(Shelf)
@@ -68,6 +71,9 @@ class BookAdmin(MobileAdminMixin, admin.ModelAdmin):
     list_per_page = 1
     search_fields = ("title", "author__name")
     inlines = (ChapterInline,)
+    mobile_card_title = "title"
+    mobile_card_subtitle = "author"
+    mobile_list_display = ("status", "published_on")
     fieldsets = (
         (None, {"fields": ("title", "author", "status", "pages")}),
         ("Schedule", {"fields": ("published_on", "reading_time", "scheduled_for")}),
@@ -93,7 +99,19 @@ class EditionAdmin(MobileAdminMixin, admin.ModelAdmin):
     filter_vertical = ("shelves",)
     radio_fields = {"format": admin.HORIZONTAL}
     prepopulated_fields = {"slug": ("title",)}
-    readonly_fields = ("internal_code",)
+    readonly_fields = ("internal_code", "cover_preview")
+
+    @admin.display(description="Cover preview")
+    def cover_preview(self, obj: Edition | None) -> str:
+        from django.utils.html import format_html
+
+        if obj is None or not getattr(obj, "cover", None):
+            return ""
+        return format_html(
+            '<img src="{}" alt="" class="admin-mobile-thumb" width="96" height="96">',
+            obj.cover.url,
+        )
+
     inlines = (CitationInline,)
     fieldsets = (
         (
@@ -111,7 +129,7 @@ class EditionAdmin(MobileAdminMixin, admin.ModelAdmin):
             },
         ),
         ("Catalog", {"fields": ("tags", "shelves", "published_on", "internal_code")}),
-        ("Files", {"fields": ("cover", "manuscript")}),
+        ("Files", {"fields": ("cover", "cover_preview", "manuscript")}),
         ("Notes", {"classes": ("collapse",), "fields": ("notes",)}),
     )
 

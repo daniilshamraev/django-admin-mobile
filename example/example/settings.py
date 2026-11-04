@@ -72,4 +72,9 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # AppointmentAdmin keeps Django's calendar and clock.
 ADMIN_MOBILE = {
     "USE_NATIVE_DATETIME": False,
+    "ACCENT": "#205067",
+    "INFINITE_SCROLL": True,
+    "FORM_DRAFTS": True,
+    "UNDO_DELETE": False,
+    "UNDO_SECONDS": 8,
 }

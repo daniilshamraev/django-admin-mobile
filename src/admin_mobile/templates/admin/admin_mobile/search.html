@@ -1,0 +1,18 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+<div id="content-main">
+  <form method="get" role="search" class="admin-mobile-search-form">
+    <label for="admin-mobile-q">Search the admin</label>
+    <input id="admin-mobile-q" type="search" name="q" value="{{ query }}" maxlength="80" autocomplete="off">
+    <button type="submit" class="button">Search</button>
+  </form>
+  <ul class="admin-mobile-results">
+    {% for hit in hits %}
+      <li><a href="{{ hit.url }}">{{ hit.label }}</a> <span>{{ hit.model }}</span></li>
+    {% empty %}
+      {% if query %}<li>No matching records.</li>{% endif %}
+    {% endfor %}
+  </ul>
+</div>
+{% endblock %}

@@ -17,6 +17,16 @@ class MobileAdminMixin:
     List this mixin before ``admin.ModelAdmin`` (or ``TabularInline``).
     A custom ``formfield_overrides`` widget for a date field is left alone.
     The global ``USE_NATIVE_DATETIME`` flag is a separate opt-in.
+
+    Optional card hints, read by the changelist template tag:
+
+    - ``mobile_card_title``
+    - ``mobile_card_subtitle``
+    - ``mobile_card_image``
+    - ``mobile_list_display``
+
+    ``mobile_readonly = True`` hides add, change, and delete when the viewport
+    cookie says the browser is narrow. That is a UX guard, not a permission.
     """
 
     formfield_overrides = {

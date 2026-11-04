@@ -1,0 +1,856 @@
+/*
+ * Phone chrome for 0.2. Surfaces use Django admin variables only.
+ * --am-* aliases follow data-theme and prefers-color-scheme because they
+ * point at those variables rather than copying a light palette.
+ */
+
+.admin-mobile-tabbar {
+    display: none;
+}
+
+.admin-mobile-sheet[hidden],
+.admin-mobile-lightbox-dialog[hidden],
+.admin-mobile-picker[hidden],
+.admin-mobile-navigator[hidden],
+.admin-mobile-bulkbar[hidden],
+.admin-mobile-ptr[hidden] {
+    display: none;
+}
+
+html.admin-mobile {
+    --am-space: 8px;
+    --am-pad: 16px;
+    --am-radius: 8px;
+    --am-tap: 44px;
+    --am-bar: 56px;
+    --am-surface: var(--body-bg);
+    --am-ink: var(--body-fg);
+    --am-muted: var(--body-quiet-color);
+    --am-line: var(--hairline-color);
+    --am-edge: var(--border-color);
+    --am-elev: var(--darkened-bg);
+    --am-accent: var(--button-bg);
+    --am-on-accent: var(--button-fg);
+    --am-header: var(--header-bg);
+    --am-header-ink: var(--header-link-color);
+    --am-danger: var(--delete-button-bg);
+    --am-shadow: color-mix(in srgb, var(--body-fg) 18%, transparent);
+}
+
+html[data-theme="dark"].admin-mobile,
+html[data-theme="light"].admin-mobile,
+html[data-theme="auto"].admin-mobile {
+    --am-surface: var(--body-bg);
+    --am-ink: var(--body-fg);
+    --am-muted: var(--body-quiet-color);
+    --am-line: var(--hairline-color);
+    --am-header: var(--header-bg);
+    --am-header-ink: var(--header-link-color);
+    --am-accent: var(--button-bg);
+    --am-on-accent: var(--button-fg);
+    --am-danger: var(--delete-button-bg);
+}
+
+@media (prefers-color-scheme: dark) {
+    html[data-theme="auto"].admin-mobile {
+        --am-surface: var(--body-bg);
+        --am-ink: var(--body-fg);
+        --am-header: var(--header-bg);
+        --am-header-ink: var(--header-link-color);
+        --am-accent: var(--button-bg);
+        --am-on-accent: var(--button-fg);
+    }
+}
+
+@media (max-width: 600px) {
+    html.admin-mobile,
+    html.admin-mobile body,
+    html.admin-mobile #container {
+        min-width: 0;
+        max-width: 100%;
+    }
+
+    html.admin-mobile #container {
+        overflow-x: clip;
+    }
+
+    html.admin-mobile #content {
+        padding: var(--am-pad);
+        box-sizing: border-box;
+    }
+
+    html.admin-mobile #header {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: var(--am-space);
+        height: auto;
+        padding: 12px var(--am-pad);
+    }
+
+    html.admin-mobile #header #toggle-nav-sidebar {
+        position: static;
+        top: auto;
+        right: auto;
+        bottom: auto;
+        left: auto;
+        flex: 0 0 var(--am-tap);
+        margin: 0;
+        box-shadow: none;
+    }
+
+    html.admin-mobile #header #branding,
+    html.admin-mobile #header #site-name {
+        flex: 1 1 auto;
+        width: auto;
+        float: none;
+    }
+
+    html.admin-mobile #branding,
+    html.admin-mobile #site-name,
+    html.admin-mobile #site-name a {
+        min-width: 0;
+        max-width: 100%;
+    }
+
+    html.admin-mobile #site-name a {
+        display: block;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    html.admin-mobile #user-tools {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: var(--am-space);
+        float: none;
+        flex: 1 1 100%;
+        width: 100%;
+        margin: 0;
+        text-align: start;
+    }
+
+    html.admin-mobile #logout-form {
+        display: inline-flex;
+        margin: 0;
+    }
+
+    html.admin-mobile #user-tools a,
+    html.admin-mobile #logout-form button,
+    html.admin-mobile .theme-toggle {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: var(--am-tap);
+        margin: 0;
+        padding: 0 var(--am-space);
+        background: transparent;
+        border: 0;
+        color: var(--am-header-ink);
+    }
+
+    html.admin-mobile .theme-toggle {
+        margin-inline-start: auto;
+    }
+
+    html.admin-mobile .breadcrumbs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px var(--am-space);
+        padding: 12px var(--am-pad);
+        white-space: normal;
+    }
+
+    html.admin-mobile #toggle-nav-sidebar {
+        position: fixed;
+        z-index: 70;
+        top: auto;
+        left: 12px;
+        bottom: calc(var(--am-bar) + 12px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: var(--am-tap);
+        height: var(--am-tap);
+        min-width: var(--am-tap);
+        min-height: var(--am-tap);
+        margin: 0;
+        border-radius: 999px;
+        background: var(--am-header);
+        color: var(--am-header-ink);
+        box-shadow: 0 4px 16px var(--am-shadow);
+    }
+
+    html[dir="rtl"].admin-mobile #toggle-nav-sidebar {
+        left: auto;
+        right: 12px;
+    }
+
+    html.admin-mobile .main,
+    html.admin-mobile .main.shifted,
+    html.admin-mobile .main > .content,
+    html.admin-mobile .main.shifted > .content {
+        display: block;
+        max-width: 100%;
+    }
+
+    html.admin-mobile #nav-sidebar {
+        position: fixed;
+        z-index: 65;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        width: min(18rem, calc(100vw - 24px));
+        margin: 0;
+        padding: var(--am-pad);
+        background: var(--am-surface);
+        color: var(--am-ink);
+        border-inline-end: 1px solid var(--am-line);
+        transform: translateX(-105%);
+        visibility: hidden;
+    }
+
+    html.admin-mobile .main.shifted #nav-sidebar {
+        transform: none;
+        visibility: visible;
+    }
+
+    html[dir="rtl"].admin-mobile #nav-sidebar {
+        left: auto;
+        right: 0;
+        transform: translateX(105%);
+    }
+
+    html[dir="rtl"].admin-mobile .main.shifted #nav-sidebar {
+        transform: none;
+    }
+
+    html.admin-mobile #content-main .module {
+        margin: 0 0 var(--am-pad);
+        border: 1px solid var(--am-line);
+        border-radius: var(--am-radius);
+        overflow: hidden;
+        background: var(--am-surface);
+    }
+
+    html.admin-mobile #content-main table:has(caption) {
+        display: block;
+        width: 100%;
+    }
+
+    html.admin-mobile #content-main table:has(caption) caption {
+        display: block;
+        padding: 12px var(--am-pad);
+        text-align: start;
+    }
+
+    html.admin-mobile #content-main table:has(caption) thead {
+        display: none;
+    }
+
+    html.admin-mobile #content-main table:has(caption) tr {
+        display: flex;
+        align-items: center;
+        gap: var(--am-space);
+        min-height: 48px;
+        padding: 0 12px;
+        border-top: 1px solid var(--am-line);
+    }
+
+    html.admin-mobile #content-main table:has(caption) th {
+        flex: 1 1 auto;
+        min-width: 0;
+        padding: 0;
+        text-align: start;
+    }
+
+    html.admin-mobile #content-main table:has(caption) th a {
+        display: flex;
+        align-items: center;
+        min-height: 48px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    html.admin-mobile #content-main table:has(caption) td {
+        flex: 0 0 auto;
+        width: auto;
+        padding: 0;
+    }
+
+    html.admin-mobile #content-main table:has(caption) td a {
+        display: inline-flex;
+        align-items: center;
+        min-height: var(--am-tap);
+        padding: 0 12px 0 28px;
+        border-radius: var(--am-radius);
+        background-color: var(--am-elev);
+        background-position: 8px center;
+        background-repeat: no-repeat;
+        text-decoration: none;
+        line-height: 1;
+        white-space: nowrap;
+    }
+
+    html.admin-mobile .object-tools {
+        float: none;
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--am-space);
+        margin: 0 0 var(--am-pad);
+        padding: 0;
+    }
+
+    html.admin-mobile .object-tools li {
+        display: block;
+        margin: 0;
+    }
+
+    html.admin-mobile .object-tools a,
+    html.admin-mobile .object-tools a.addlink,
+    html.admin-mobile .object-tools a.viewsitelink {
+        float: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: flex-start;
+        min-height: var(--am-tap);
+        margin: 0;
+        padding: 0 16px 0 36px;
+        border-radius: var(--am-radius);
+        line-height: 1;
+        background-position: 12px center;
+        background-repeat: no-repeat;
+    }
+
+    html.admin-mobile-cards .admin-mobile-sort {
+        display: flex;
+        align-items: center;
+        gap: var(--am-space);
+        width: 100%;
+        margin: 0 0 var(--am-pad);
+    }
+
+    html.admin-mobile-cards .admin-mobile-sort span {
+        color: var(--am-muted);
+        font-weight: 600;
+    }
+
+    html.admin-mobile-cards .admin-mobile-sort select,
+    html.admin-mobile #toolbar input[type="text"],
+    html.admin-mobile #toolbar input[type="search"],
+    html.admin-mobile #changelist .actions select {
+        flex: 1 1 auto;
+        width: 100%;
+        min-height: var(--am-tap);
+        font-size: 16px;
+        color: var(--am-ink);
+        background: var(--am-surface);
+        border: 1px solid var(--am-edge);
+        border-radius: var(--am-radius);
+    }
+
+    html.admin-mobile #toolbar,
+    html.admin-mobile #changelist .actions,
+    html.admin-mobile .toplinks {
+        margin-bottom: var(--am-pad);
+    }
+
+    html.admin-mobile #toolbar form,
+    html.admin-mobile #changelist-search,
+    html.admin-mobile #changelist-search > div {
+        display: flex;
+        align-items: center;
+        gap: var(--am-space);
+        width: 100%;
+    }
+
+    html.admin-mobile #searchbar {
+        flex: 1 1 auto;
+        width: auto;
+        min-width: 0;
+        height: var(--am-tap);
+    }
+
+    html.admin-mobile #toolbar form,
+    html.admin-mobile #changelist .actions {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: var(--am-space);
+    }
+
+    html.admin-mobile .toplinks {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--am-space);
+    }
+
+    html.admin-mobile .toplinks a {
+        display: inline-flex;
+        align-items: center;
+        min-height: var(--am-tap);
+        padding: 0 8px;
+    }
+
+    html.admin-mobile-cards #result_list tbody td,
+    html.admin-mobile-cards #result_list tbody th {
+        display: grid;
+        grid-template-columns: minmax(7rem, 42%) minmax(0, 1fr);
+        align-items: center;
+        gap: var(--am-space);
+        min-height: 48px;
+        padding: 8px 0;
+    }
+
+    html.admin-mobile-cards #result_list tbody tr {
+        padding: 8px var(--am-pad);
+        border-radius: var(--am-radius);
+    }
+
+    html.admin-mobile-cards #result_list .admin-mobile-card-title {
+        grid-template-columns: 1fr;
+        font-weight: 700;
+    }
+
+    html.admin-mobile-cards #result_list .admin-mobile-card-title::before,
+    html.admin-mobile-cards #result_list .admin-mobile-card-image::before {
+        content: none;
+    }
+
+    html.admin-mobile-cards #result_list .admin-mobile-card-extra {
+        display: none;
+    }
+
+    html.admin-mobile-cards #result_list tbody a {
+        min-height: var(--am-tap);
+        align-items: center;
+    }
+
+    html.admin-mobile-filters #changelist-filter > h2,
+    html.admin-mobile-filters #changelist-filter-header {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+    }
+
+    html.admin-mobile-filters #changelist-filter li a,
+    html.admin-mobile-filters #changelist-filter summary {
+        display: flex;
+        align-items: center;
+        min-height: var(--am-tap);
+        padding: 8px 4px;
+        text-decoration: none;
+    }
+
+    html.admin-mobile-filter-sheet #changelist-filter.admin-mobile-open {
+        position: fixed;
+        z-index: 80;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        max-height: min(70vh, 32rem);
+        margin: 0;
+        padding: 8px var(--am-pad) var(--am-pad);
+        overflow: auto;
+        border-radius: 16px 16px 0 0;
+        background: var(--am-surface);
+        color: var(--am-ink);
+        box-shadow: 0 -8px 24px var(--am-shadow);
+    }
+
+    html.admin-mobile .admin-mobile-filter-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 1.5rem;
+        min-height: 1.5rem;
+        margin-inline-start: var(--am-space);
+        padding: 0 6px;
+        border-radius: 999px;
+        background: var(--am-accent);
+        color: var(--am-on-accent);
+    }
+
+    html.admin-mobile #content .form-row input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="submit"]):not([type="button"]),
+    html.admin-mobile #content .form-row select,
+    html.admin-mobile #content .form-row textarea,
+    html.admin-mobile #content .vIntegerField,
+    html.admin-mobile #content .vForeignKeyRawIdAdminField,
+    html.admin-mobile #content .vTextField,
+    html.admin-mobile #content .vDateField,
+    html.admin-mobile #content .vTimeField,
+    html.admin-mobile #content .vURLField,
+    html.admin-mobile #content input[type="email"],
+    html.admin-mobile #content input[type="url"],
+    html.admin-mobile #content input[type="file"] {
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+        min-height: var(--am-tap);
+        font-size: 16px;
+    }
+
+    html.admin-mobile .aligned label:not(.vCheckboxLabel) {
+        display: block;
+        width: auto;
+        float: none;
+        padding: 0 0 4px;
+    }
+
+    html.admin-mobile .aligned .form-row > div,
+    html.admin-mobile .related-widget-wrapper {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    html.admin-mobile .help,
+    html.admin-mobile .readonly {
+        margin-top: 4px;
+    }
+
+    html.admin-mobile .related-widget-wrapper {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: var(--am-space);
+    }
+
+    html.admin-mobile .related-widget-wrapper > select,
+    html.admin-mobile .related-widget-wrapper > .select2-container {
+        flex: 1 1 100%;
+    }
+
+    html.admin-mobile .related-widget-wrapper > a,
+    html.admin-mobile a.related-lookup {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: var(--am-tap);
+        min-width: var(--am-tap);
+        min-height: var(--am-tap);
+    }
+
+    html.admin-mobile-inlines .inline-group .tabular tr.form-row:not(.empty-form) {
+        padding: 12px;
+    }
+
+    html.admin-mobile-inlines .inline-group .tabular tr.add-row a,
+    html.admin-mobile .inline-group .add-row a {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        min-height: var(--am-tap);
+        border-radius: var(--am-radius);
+        background-color: var(--am-elev);
+        text-decoration: none;
+    }
+
+    html.admin-mobile .inline-deletelink {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: var(--am-tap);
+        min-height: var(--am-tap);
+    }
+
+    html.admin-mobile-sticky form .submit-row:last-of-type {
+        display: flex;
+        flex-direction: column;
+        gap: var(--am-space);
+        padding: 12px var(--am-pad) calc(12px + env(safe-area-inset-bottom));
+        background: var(--am-surface);
+        border-top: 1px solid var(--am-line);
+    }
+
+    html.admin-mobile-tabs.admin-mobile-sticky form .submit-row:last-of-type {
+        bottom: var(--am-bar);
+    }
+
+    html.admin-mobile .submit-row input,
+    html.admin-mobile .submit-row a,
+    html.admin-mobile .submit-row button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        min-height: var(--am-tap);
+        margin: 0;
+        box-sizing: border-box;
+    }
+
+    html.admin-mobile .submit-row .deletelink,
+    html.admin-mobile .submit-row a.deletelink {
+        margin-top: var(--am-space);
+    }
+
+    html.admin-mobile-tabs body {
+        padding-bottom: calc(var(--am-bar) + env(safe-area-inset-bottom));
+    }
+
+    html.admin-mobile .admin-mobile-tabbar {
+        position: fixed;
+        z-index: 60;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: flex;
+        align-items: stretch;
+        min-height: var(--am-bar);
+        margin: 0;
+        padding: 0 8px env(safe-area-inset-bottom);
+        background: var(--am-header);
+        color: var(--am-header-ink);
+        border-top: 1px solid var(--am-line);
+    }
+
+    html.admin-mobile .admin-mobile-tabbar a,
+    html.admin-mobile .admin-mobile-tabbar button {
+        flex: 1 1 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: var(--am-tap);
+        padding: 0 4px;
+        background: transparent;
+        border: 0;
+        color: var(--am-header-ink);
+        font: inherit;
+        text-decoration: none;
+    }
+
+    html.admin-mobile .admin-mobile-sheet,
+    html.admin-mobile .admin-mobile-lightbox-dialog,
+    html.admin-mobile .admin-mobile-toast,
+    html.admin-mobile .admin-mobile-slide,
+    html.admin-mobile .admin-mobile-bulkbar,
+    html.admin-mobile .admin-mobile-picker,
+    html.admin-mobile .admin-mobile-navigator,
+    html.admin-mobile .admin-mobile-swipe-actions button,
+    html.admin-mobile .admin-mobile-ptr,
+    html.admin-mobile .admin-mobile-skeleton {
+        background: var(--am-surface);
+        color: var(--am-ink);
+        border-color: var(--am-line);
+    }
+
+    html.admin-mobile .admin-mobile-sheet,
+    html.admin-mobile .admin-mobile-picker,
+    html.admin-mobile .admin-mobile-navigator {
+        position: fixed;
+        z-index: 85;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        max-height: min(75vh, 34rem);
+        overflow: auto;
+        padding: var(--am-pad);
+        border: 1px solid var(--am-line);
+        border-radius: 16px 16px 0 0;
+        box-shadow: 0 -8px 24px var(--am-shadow);
+    }
+
+    html.admin-mobile .admin-mobile-sheet input,
+    html.admin-mobile .admin-mobile-picker input,
+    html.admin-mobile .admin-mobile-search-form input {
+        width: 100%;
+        min-height: var(--am-tap);
+        font-size: 16px;
+        color: var(--am-ink);
+        background: var(--am-surface);
+        border: 1px solid var(--am-edge);
+        border-radius: var(--am-radius);
+        box-sizing: border-box;
+    }
+
+    html.admin-mobile .admin-mobile-sheet button,
+    html.admin-mobile .admin-mobile-picker button,
+    html.admin-mobile .admin-mobile-navigator button,
+    html.admin-mobile .admin-mobile-results a {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        min-height: var(--am-tap);
+        padding: 8px 0;
+        background: transparent;
+        border: 0;
+        color: var(--link-fg);
+        text-align: start;
+        font: inherit;
+    }
+
+    html.admin-mobile .admin-mobile-lightbox-dialog {
+        position: fixed;
+        z-index: 90;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: var(--am-pad);
+        background: var(--am-surface);
+        color: var(--am-ink);
+    }
+
+    html.admin-mobile .admin-mobile-lightbox-dialog img {
+        max-width: 100%;
+        max-height: 100%;
+        touch-action: none;
+    }
+
+    html.admin-mobile .admin-mobile-lightbox-close,
+    html.admin-mobile .admin-mobile-sheet-close {
+        min-height: var(--am-tap);
+        min-width: var(--am-tap);
+        background: var(--am-elev);
+        color: var(--am-ink);
+        border: 1px solid var(--am-line);
+        border-radius: var(--am-radius);
+    }
+
+    html.admin-mobile .admin-mobile-toast,
+    html.admin-mobile .messagelist.admin-mobile-toast-list {
+        position: fixed;
+        z-index: 95;
+        left: var(--am-pad);
+        right: var(--am-pad);
+        top: 12px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+
+    html.admin-mobile .admin-mobile-toast,
+    html.admin-mobile .messagelist.admin-mobile-toast-list li {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--am-space);
+        min-height: var(--am-tap);
+        margin: 0 0 var(--am-space);
+        padding: 8px 12px;
+        border: 1px solid var(--am-line);
+        border-radius: var(--am-radius);
+        background: var(--message-success-bg, var(--am-elev));
+        color: var(--am-ink);
+    }
+
+    html.admin-mobile .admin-mobile-toast button {
+        min-height: var(--am-tap);
+        background: transparent;
+        border: 0;
+        color: var(--link-fg);
+        font: inherit;
+    }
+
+    html.admin-mobile .admin-mobile-swipe-actions {
+        display: flex;
+        gap: var(--am-space);
+        margin-top: var(--am-space);
+    }
+
+    html.admin-mobile .admin-mobile-swipe-actions button[data-act="open"] {
+        background: var(--am-accent);
+        color: var(--am-on-accent);
+    }
+
+    html.admin-mobile .admin-mobile-swipe-actions button[data-act="delete"] {
+        background: var(--am-danger);
+        color: var(--am-on-accent);
+    }
+
+    html.admin-mobile .admin-mobile-swipe-actions button {
+        flex: 1 1 0;
+        min-height: var(--am-tap);
+        border: 0;
+        border-radius: var(--am-radius);
+        font: inherit;
+    }
+
+    html.admin-mobile .admin-mobile-slide {
+        position: relative;
+        display: flex;
+        align-items: center;
+        min-height: 56px;
+        padding: 4px;
+        border: 1px solid var(--am-edge);
+        border-radius: 999px;
+        background: var(--am-elev);
+        color: var(--am-muted);
+        touch-action: none;
+    }
+
+    html.admin-mobile .admin-mobile-slide-knob {
+        width: 48px;
+        height: 48px;
+        border-radius: 999px;
+        background: var(--am-danger);
+        color: var(--am-on-accent);
+    }
+
+    html.admin-mobile .admin-mobile-bulkbar:not([hidden]) {
+        position: fixed;
+        z-index: 55;
+        left: var(--am-pad);
+        right: var(--am-pad);
+        bottom: calc(var(--am-bar) + 8px);
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: var(--am-space);
+        padding: 8px;
+        border: 1px solid var(--am-line);
+        border-radius: var(--am-radius);
+        box-shadow: 0 8px 24px var(--am-shadow);
+    }
+
+    html.admin-mobile .admin-mobile-ptr,
+    html.admin-mobile .admin-mobile-skeleton {
+        min-height: var(--am-tap);
+        margin-bottom: var(--am-space);
+        border: 1px solid var(--am-line);
+        border-radius: var(--am-radius);
+        background: linear-gradient(
+            90deg,
+            var(--am-elev),
+            color-mix(in srgb, var(--am-ink) 8%, var(--am-elev)),
+            var(--am-elev)
+        );
+        color: var(--am-muted);
+    }
+
+    html.admin-mobile .admin-mobile-busy {
+        position: relative;
+        color: transparent;
+    }
+
+    html.admin-mobile .admin-mobile-busy::after {
+        content: "";
+        position: absolute;
+        width: 1rem;
+        height: 1rem;
+        border: 2px solid color-mix(in srgb, var(--am-on-accent) 35%, transparent);
+        border-top-color: var(--am-on-accent);
+        border-radius: 50%;
+        animation: admin-mobile-spin 0.8s linear infinite;
+    }
+
+    html.admin-mobile .admin-mobile-thumb {
+        width: 96px;
+        height: 96px;
+        object-fit: cover;
+        border-radius: var(--am-radius);
+        border: 1px solid var(--am-line);
+    }
+}
+
+@keyframes admin-mobile-spin {
+    to { transform: rotate(360deg); }
+}

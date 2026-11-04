@@ -111,6 +111,12 @@ def catalog(live_server: object) -> dict[str, str]:
     edition.tags.add(tag)
     edition.shelves.add(shelf)
     edition.manuscript.save("memo.txt", ContentFile(b"Local demo file.\n"), save=True)
+    cover = (
+        Path(__file__).resolve().parents[1]
+        / "src/admin_mobile/static/admin_mobile/icons/icon-192.png"
+    )
+    if cover.is_file():
+        edition.cover.save("cover.png", ContentFile(cover.read_bytes()), save=True)
     Citation.objects.create(
         edition=edition,
         quote="The Analytical Engine weaves algebraical patterns.",
@@ -137,6 +143,9 @@ def catalog(live_server: object) -> dict[str, str]:
         "edition_add": "/admin/library/edition/add/",
         "revisions": "/admin/library/revision/",
         "appointment": f"/admin/library/appointment/{visit.pk}/change/",
+        "tag": f"/admin/library/tag/{tag.pk}/change/",
+        "search": "/admin/admin-mobile/search/?q=Notes",
+        "recent": "/admin/admin-mobile/recent/",
     }
 
 
@@ -189,23 +198,17 @@ def test_admin_screenshots_at_phone_width(
     expect(page.locator("#admin-mobile-select-all")).to_be_visible()
     expect(page.locator(".toplinks a").first).to_be_visible()
     expect(page.locator(".paginator").first).to_be_visible()
+    display = title_cell.evaluate("element => getComputedStyle(element).display")
+    assert display == "grid"
+    _pair(page, "changelist-375.png")
     page.locator("#admin-mobile-select-all").check()
     expect(page.locator("#result_list .action-checkbox input").first).to_be_checked()
-    display = title_cell.evaluate("element => getComputedStyle(element).display")
-    assert display == "flex"
-    page.screenshot(path=str(SCREENSHOTS / "changelist-375.png"))
 
     page.locator("#admin-mobile-filter-toggle").click()
     expect(page.locator("#changelist-filter")).to_be_visible()
     expect(page.locator("#changelist-filter").get_by_text("By status")).to_be_visible()
-    page.screenshot(path=str(SCREENSHOTS / "filters-375.png"))
+    _pair(page, "filters-375.png")
     page.locator("#admin-mobile-filter-toggle").click()
-
-    page.emulate_media(color_scheme="dark")
-    page.evaluate("document.documentElement.setAttribute('data-theme', 'dark')")
-    page.screenshot(path=str(SCREENSHOTS / "changelist-375-dark.png"))
-    page.emulate_media(color_scheme="light")
-    page.evaluate("document.documentElement.setAttribute('data-theme', 'light')")
 
     page.set_viewport_size({"width": 800, "height": 900})
     page.goto(f"{base_url}{catalog['list']}")
@@ -248,11 +251,32 @@ def test_admin_screenshots_at_phone_width(
     page.locator(".inline-deletelink").last.click()
     expect(title_inputs).to_have_count(before_add)
 
-    page.screenshot(path=str(SCREENSHOTS / "change-form-375.png"), full_page=True)
+    _pair(page, "change-form-375.png", full=True)
+    page.set_viewport_size({"width": 414, "height": 896})
+    _pair(page, "change-form-414.png", full=True)
+    page.set_viewport_size({"width": 375, "height": 812})
 
 
 def _shot(page: Page, name: str, *, full: bool = False) -> None:
     page.screenshot(path=str(SCREENSHOTS / name), full_page=full)
+
+
+def _theme(page: Page, name: str) -> None:
+    page.emulate_media(color_scheme=name)
+    page.evaluate(
+        "(theme) => document.documentElement.setAttribute('data-theme', theme)",
+        name,
+    )
+
+
+def _pair(page: Page, name: str, *, full: bool = False) -> None:
+    _theme(page, "light")
+    _shot(page, name, full=full)
+    _theme(page, "dark")
+    stem, _, ext = name.rpartition(".")
+    if not stem.endswith("-dark"):
+        _shot(page, f"{stem}-dark.{ext}", full=full)
+    _theme(page, "light")
 
 
 def test_builtin_admin_surfaces(
@@ -266,20 +290,21 @@ def test_builtin_admin_surfaces(
 
     page.goto(f"{base_url}/admin/login/")
     expect(page.locator("#id_username")).to_be_visible()
-    _shot(page, "login-375.png")
+    _pair(page, "login-375.png")
     _login(page, base_url)
 
     page.goto(f"{base_url}/admin/")
     expect(page.locator("#content-main")).to_be_visible()
-    _shot(page, "index-375.png", full=True)
+    _pair(page, "index-375.png", full=True)
+    _pair(page, "tabs-375.png")
 
     page.goto(f"{base_url}/admin/library/")
     expect(page.get_by_role("link", name="Books")).to_be_visible()
-    _shot(page, "app-index-375.png", full=True)
+    _pair(page, "app-index-375.png", full=True)
 
     page.goto(f"{base_url}/admin/password_change/")
     expect(page.locator("#id_old_password")).to_be_visible()
-    _shot(page, "password-change-375.png")
+    _pair(page, "password-change-375.png")
 
     page.goto(f"{base_url}{catalog['list']}")
     toggle = page.locator("#toggle-nav-sidebar")
@@ -289,21 +314,22 @@ def test_builtin_admin_surfaces(
         toggle.click()
     expect(sidebar).to_be_visible()
     page.fill("#nav-filter", "Book")
-    _shot(page, "nav-sidebar-375.png")
+    _pair(page, "nav-sidebar-375.png")
     toggle.click()
     expect(sidebar).to_be_hidden()
 
     page.goto(f"{base_url}{catalog['revisions']}")
     expect(page.locator("#result_list input[name$='-note']").first).to_be_visible()
-    _shot(page, "changelist-editable-375.png", full=True)
+    _pair(page, "changelist-editable-375.png", full=True)
 
     page.goto(f"{base_url}{catalog['edition']}")
     expect(page.locator("input[name='series']")).to_be_visible()
     expect(page.locator(".selector").first).to_be_visible()
-    expect(page.get_by_text("Currently:")).to_be_visible()
+    expect(page.get_by_text("Currently:").first).to_be_visible()
     expect(page.locator(".inline-group[data-inline-type='stacked']")).to_be_visible()
-    expect(page.locator(".readonly")).to_be_visible()
-    _shot(page, "edition-375.png", full=True)
+    expect(page.locator(".readonly").first).to_be_visible()
+    _pair(page, "edition-375.png", full=True)
+    _pair(page, "camera-375.png")
 
     with page.expect_popup() as popup_info:
         page.locator("#add_id_publisher").click()
@@ -311,6 +337,9 @@ def test_builtin_admin_surfaces(
     popup.set_viewport_size({"width": 375, "height": 812})
     expect(popup.locator("input[type='text']").first).to_be_visible()
     popup.screenshot(path=str(SCREENSHOTS / "popup-375.png"), full_page=True)
+    popup.emulate_media(color_scheme="dark")
+    popup.evaluate("document.documentElement.setAttribute('data-theme', 'dark')")
+    popup.screenshot(path=str(SCREENSHOTS / "popup-375-dark.png"), full_page=True)
     popup.close()
 
     page.goto(f"{base_url}{catalog['edition_add']}")
@@ -318,7 +347,7 @@ def test_builtin_admin_surfaces(
     page.locator("input[name$='-page']").first.fill("4")
     page.locator("input[name='_save']").click()
     expect(page.locator(".errornote, .errorlist").first).to_be_visible()
-    _shot(page, "inline-errors-375.png", full=True)
+    _pair(page, "inline-errors-375.png", full=True)
 
     page.goto(f"{base_url}{catalog['history']}")
     expect(
@@ -327,32 +356,100 @@ def test_builtin_admin_surfaces(
         "data-label",
         "Date/time",
     )
-    _shot(page, "history-375.png", full=True)
+    _pair(page, "history-375.png", full=True)
 
     page.goto(f"{base_url}{catalog['delete']}")
     expect(page.get_by_text("Note G")).to_be_visible()
-    _shot(page, "delete-confirm-375.png", full=True)
+    _pair(page, "delete-confirm-375.png", full=True)
+    page.locator("input[type='submit']").click()
+    expect(page.locator(".admin-mobile-slide")).to_be_visible()
+    _pair(page, "slide-confirm-375.png")
+    page.locator(".admin-mobile-slide").focus()
+    for _ in range(5):
+        page.keyboard.press("ArrowRight")
+    expect(page.locator(".admin-mobile-toast")).to_be_visible()
+    _pair(page, "undo-375.png")
+    page.locator(".admin-mobile-toast button").click()
 
     page.goto(f"{base_url}{catalog['appointment']}")
     page.locator("#calendarlink0").click()
     expect(page.locator("#calendarbox0")).to_be_visible()
-    _shot(page, "calendar-375.png")
+    _pair(page, "calendar-375.png")
     page.locator("#calendarbox0 .calendar-cancel").click()
     page.locator("#clocklink0").click()
     expect(page.locator("#clockbox0")).to_be_visible()
-    _shot(page, "clock-375.png")
+    _pair(page, "clock-375.png")
 
     page.goto(f"{base_url}/admin/doc/")
     expect(page.locator("#content")).to_be_visible()
-    _shot(page, "admindocs-375.png", full=True)
+    _pair(page, "admindocs-375.png", full=True)
     page.goto(f"{base_url}/admin/doc/models/library.book/")
     expect(page.locator("table.model")).to_be_visible()
-    _shot(page, "admindocs-model-375.png", full=True)
+    _pair(page, "admindocs-model-375.png", full=True)
 
     page.goto(f"{base_url}{catalog['change']}")
     page.locator("input[name='_save']").click()
     expect(page.locator(".messagelist")).to_be_visible()
-    _shot(page, "message-375.png")
+    _pair(page, "message-375.png")
+    _pair(page, "toast-375.png")
+
+    page.goto(f"{base_url}{catalog['search']}")
+    expect(page.locator("#admin-mobile-q")).to_be_visible()
+    _pair(page, "search-375.png", full=True)
+    page.goto(f"{base_url}{catalog['recent']}")
+    _pair(page, "recent-375.png", full=True)
+
+    page.goto(f"{base_url}{catalog['list']}")
+    _pair(page, "pull-375.png")
+    page.locator(".admin-mobile-save-model").click()
+    page.locator(".admin-mobile-tabbar").get_by_role("button", name="Saved").click()
+    expect(page.get_by_text("Saved models")).to_be_visible()
+    _pair(page, "favorites-375.png")
+
+    page.goto(f"{base_url}{catalog['list']}")
+    row = page.locator("#result_list tbody tr").first
+    box = row.bounding_box()
+    assert box is not None
+    page.mouse.move(box["x"] + box["width"] - 20, box["y"] + 24)
+    page.mouse.down()
+    page.mouse.move(box["x"] + 20, box["y"] + 24)
+    page.mouse.up()
+    expect(page.locator(".admin-mobile-swipe-actions").first).to_be_visible()
+    _pair(page, "swipe-375.png")
+    page.locator("#result_list .action-checkbox input").first.check()
+    expect(page.locator(".admin-mobile-bulkbar")).to_be_visible()
+    _pair(page, "bulk-375.png")
+    page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
+    page.wait_for_timeout(500)
+    _pair(page, "infinite-scroll-375.png")
+
+    page.goto(f"{base_url}{catalog['change']}")
+    page.locator("#id_status").click()
+    expect(page.locator(".admin-mobile-picker")).to_be_visible()
+    _pair(page, "picker-375.png")
+    page.keyboard.press("Escape")
+    page.get_by_role("button", name="Sections").click()
+    expect(page.locator(".admin-mobile-navigator")).to_be_visible()
+    _pair(page, "navigator-375.png")
+
+    page.goto(f"{base_url}{catalog['tag']}")
+    expect(page.locator("input[name='_save']")).to_have_count(0)
+    _pair(page, "readonly-375.png", full=True)
+
+    page.goto(f"{base_url}{catalog['edition']}")
+    thumb = page.locator(".readonly .admin-mobile-thumb")
+    if thumb.count():
+        thumb.click()
+        expect(page.locator(".admin-mobile-lightbox-dialog")).to_be_visible()
+        _pair(page, "lightbox-375.png")
+        page.locator(".admin-mobile-lightbox-close").click()
+
+    page.set_viewport_size({"width": 414, "height": 896})
+    page.goto(f"{base_url}{catalog['list']}")
+    _pair(page, "changelist-414.png")
+    page.goto(f"{base_url}/admin/")
+    _pair(page, "index-414.png", full=True)
+    page.set_viewport_size({"width": 375, "height": 812})
 
     page.goto(f"{base_url}{catalog['list']}")
     page.evaluate("document.documentElement.setAttribute('dir', 'rtl')")
@@ -362,8 +459,8 @@ def test_builtin_admin_surfaces(
         "data-label",
         "Title",
     )
-    _shot(page, "rtl-changelist-375.png")
+    _pair(page, "rtl-changelist-375.png")
 
     page.locator("#logout-form button").click()
     expect(page.get_by_text("Logged out")).to_be_visible()
-    _shot(page, "logged-out-375.png")
+    _pair(page, "logged-out-375.png")

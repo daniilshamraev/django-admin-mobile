@@ -1,0 +1,13 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+<div id="content-main">
+  <ul class="admin-mobile-results">
+    {% for row in rows %}
+      <li><a href="{{ row.url }}">{{ row.label }}</a></li>
+    {% empty %}
+      <li>No recent changes.</li>
+    {% endfor %}
+  </ul>
+</div>
+{% endblock %}

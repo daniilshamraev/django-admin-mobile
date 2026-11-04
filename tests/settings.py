@@ -68,3 +68,10 @@ STATIC_URL = "/static/"
 MEDIA_URL = "/media/"
 MEDIA_ROOT = Path(__file__).resolve().parent / "media"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+ADMIN_MOBILE = {
+    "ACCENT": "#205067",
+    "INFINITE_SCROLL": True,
+    "FORM_DRAFTS": True,
+    "UNDO_DELETE": True,
+    "UNDO_SECONDS": 8,
+}

@@ -74,8 +74,37 @@ ADMIN_MOBILE = {
 | `TOUCH_TARGETS` | `True` | Targets at least 44px, inputs at 16px (stops iOS from zooming), larger checkboxes. |
 | `COLLAPSIBLE_FILTERS` | `True` | `#changelist-filter` collapses behind a button. Django's filters, django-admin-rangefilter, and django-more-admin-filters render inside that node; this package does not import them. |
 | `USE_NATIVE_DATETIME` | `False` | Opt in to native date/time widgets on **every** `ModelAdmin` and inline. A custom `formfield_overrides` widget is kept. |
+| `BOTTOM_TABS` | `True` | Home, search, recent, and saved-model tabs. Favorites stay in `localStorage`. |
+| `GLOBAL_SEARCH` | `True` | Staff search across admins that define `search_fields`. Permissions are checked per model. |
+| `SWIPE_ACTIONS` | `True` | Swipe a card right to open it, left for Open/Delete. Delete still posts `delete_selected` after confirm. |
+| `PULL_TO_REFRESH` | `True` | Pull down on a changelist to reload. |
+| `INFINITE_SCROLL` | `False` | Fetch the next changelist page instead of using the pager. |
+| `FILTER_SHEET` | `True` | Filters open in a bottom sheet with an active-count badge and Reset. |
+| `STICKY_ACTIONS` | `True` | `Selected N`, the action menu, and Run stick above the tab bar. |
+| `UNSAVED_GUARD` | `True` | `beforeunload` when a change form is dirty. |
+| `FORM_DRAFTS` | `False` | Autosave add-form text fields in `localStorage` and offer restore. Passwords and files are skipped. |
+| `CAMERA_CAPTURE` | `True` | Camera button on file inputs, with a preview. |
+| `CAMERA_COMPRESS` | `True` | Downscale camera images to 1600px JPEG in the browser. |
+| `MOBILE_KEYBOARDS` | `True` | `inputmode` for integers, decimals, email, url, and phone-like names. |
+| `FORM_NAVIGATOR` | `True` | Sections button that jumps to fieldsets and inlines. |
+| `SHEET_PICKERS` | `True` | Searchable bottom sheet for selects and autocomplete. The native control remains if JS does not run. |
+| `PWA` | `True` | Manifest, icons, live `theme-color` from `--header-bg`, and a service worker that caches `/static/` only. |
+| `HAPTICS` | `True` | `navigator.vibrate` on save, and message toasts that dismiss themselves. |
+| `LIGHTBOX` | `True` | Tap a preview to open a viewer. Pinch to zoom, swipe down to close. |
+| `UNDO_DELETE` | `False` | After you confirm a single-object delete, wait `UNDO_SECONDS` (5–10, default 8) before the real POST. The toast is `Удалено — Отменить`. Leaving the page cancels it. The row is not deleted on the server until that POST. Risky: the label says deleted while the row still exists. |
+| `SWIPE_CONFIRM` | `True` | Slide control for the delete confirmation page and for actions listed in `SWIPE_CONFIRM_ACTIONS` (default `delete_selected`). |
+| `DOUBLE_SUBMIT_GUARD` | `True` | Disable submit buttons after the first submit. `pageshow` from the back-forward cache turns them back on. |
+| `ACCENT` | unset | Hex color (`#rgb` or `#rrggbb`) mapped to `--accent`, `--button-bg`, `--default-button-bg`, and `--object-tools-bg` for both `data-theme` values and `prefers-color-scheme`. |
+| `PALETTE` | unset | Optional map of allow-listed admin variable names (`primary`, `header-bg`, `link-fg`, …) to hex colors. |
+| `READONLY_MODELS` | `[]` | `app.model` labels that lose add/change/delete when the `admin_mobile_viewport=mobile` cookie is set. |
 
-Unknown keys and non-booleans raise `ImproperlyConfigured`.
+`MobileAdminMixin` also accepts `mobile_card_title`, `mobile_card_subtitle`, `mobile_card_image`, `mobile_list_display`, and `mobile_readonly = True`.
+
+`mobile_readonly` and `READONLY_MODELS` only look at a cookie the phone script sets. That is a UX guard. It does not replace permissions: a desktop client, or a client that drops the cookie, keeps the real Django permissions.
+
+Surfaces use Django admin CSS variables, including `html[data-theme]` and `prefers-color-scheme`. The service worker does not cache HTML or authenticated responses.
+
+Unknown keys are rejected. Boolean flags must be real bools. `ACCENT` and `PALETTE` must be hex.
 
 ## Native date and time widgets
 
@@ -138,11 +167,10 @@ uv run tox
 
 ## Publishing
 
-The package is not on PyPI yet.
+0.1.0 is already on PyPI. This tree is 0.2.0 and is not published from here.
 
-1. Create a GitHub repository and push this project.
-2. Add `[project.urls]` in `pyproject.toml` (`Homepage`, `Repository`, `Changelog`).
-3. Build: `uv build` (hatchling, src layout, static files and templates included).
-4. Publish: `uv publish` with a PyPI API token. The name `django-admin-mobile` has to be free on PyPI; the import name is `admin_mobile`.
+1. Tag `0.2.0` when you want a release.
+2. Build: `uv build`.
+3. Publish: `uv publish` with a PyPI token.
 
 Author: Daniil Shamraev. License: MIT.

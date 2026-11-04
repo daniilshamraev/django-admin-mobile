@@ -1,0 +1,7 @@
+{% extends "admin/change_list.html" %}
+{% load admin_mobile %}
+
+{% block extrahead %}
+{{ block.super }}
+{% admin_mobile_card_config cl %}
+{% endblock %}
