@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.8
+
+- Object history on a phone is a vertical timeline, newest first, grouped by day. Added, changed, and deleted entries use their own color and icon. Changed fields are chips. The entry count sits in the page footer.
+- The History control is a 44px secondary button with a clock icon and a normal-case label. View on site and other object tools use the same wrapping row.
+
 ## 0.2.7
 
 - The phone filter panel is a bottom sheet: dimmed backdrop, 16px top corners, grab handle, sticky Filters / Reset / Close header, chevrons, 44px options with an accent check and right-aligned counts, and a sticky Show results button. The scrim darkens the page in light and dark. A selected row keeps a visible accent tint and check in dark mode.

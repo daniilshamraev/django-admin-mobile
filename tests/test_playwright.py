@@ -2,13 +2,14 @@
 
 from __future__ import annotations
 
+import json
 import re
-from datetime import date, datetime, time
+from datetime import date, datetime, time, timedelta
 from decimal import Decimal
 from pathlib import Path
 
 import pytest
-from django.contrib.admin.models import ADDITION, LogEntry
+from django.contrib.admin.models import ADDITION, CHANGE, DELETION, LogEntry
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from django.core.files.base import ContentFile
@@ -90,14 +91,32 @@ def catalog(live_server: object) -> dict[str, str]:
         word_count=1800,
     )
     user = user_model.objects.get(username="shot")
-    LogEntry.objects.create(
-        user_id=user.pk,
-        content_type_id=ContentType.objects.get_for_model(notes).pk,
-        object_id=str(notes.pk),
-        object_repr=str(notes)[:200],
-        action_flag=ADDITION,
-        change_message="Added for the history screen.",
+    content_type = ContentType.objects.get_for_model(notes)
+    now = timezone.now()
+    history_rows = (
+        (now - timedelta(days=2, hours=4), ADDITION, "Added."),
+        (
+            now - timedelta(days=2, hours=1),
+            CHANGE,
+            json.dumps([{"changed": {"fields": ["Title", "Status"]}}]),
+        ),
+        (
+            now - timedelta(days=1, hours=5),
+            CHANGE,
+            json.dumps([{"changed": {"fields": ["Pages", "Notes"]}}]),
+        ),
+        (now - timedelta(days=1, hours=1), DELETION, "Deleted chapter “Note G”."),
     )
+    for when, flag, message in history_rows:
+        LogEntry.objects.create(
+            user_id=user.pk,
+            content_type_id=content_type.pk,
+            object_id=str(notes.pk),
+            object_repr=str(notes)[:200],
+            action_flag=flag,
+            change_message=message,
+            action_time=when,
+        )
     press = Publisher.objects.create(name="Local Press")
     series = Series.objects.create(name="Computing Classics")
     tag = Tag.objects.create(name="Margin notes", slug="margin-notes")
@@ -331,6 +350,7 @@ def test_admin_screenshots_at_phone_width(
     )
     expect(page.locator("#id_title")).to_be_in_viewport()
     expect(page.locator("form .submit-row").last).to_be_in_viewport()
+    _expect_history_button(page)
     _pair(page, "change-form-375.png")
 
     page.goto(f"{base_url}{catalog['list']}")
@@ -406,6 +426,26 @@ def _scrim_is_dark(css: str, alpha: float) -> bool:
         and blue <= 16
         and abs(found - alpha) < 0.02
     )
+
+
+def _expect_history_button(page: Page) -> None:
+    button = page.locator("a.historylink")
+    expect(button).to_be_visible()
+    expect(button).to_have_text("History")
+    style = button.evaluate(
+        """element => {
+          const computed = getComputedStyle(element);
+          const icon = getComputedStyle(element, "::before");
+          return {
+            transform: computed.textTransform,
+            height: computed.height,
+            icon: icon.width,
+          };
+        }"""
+    )
+    assert style["transform"] == "none"
+    assert style["height"] == "44px"
+    assert style["icon"] == "18px"
 
 
 def _shot(page: Page, name: str) -> None:
@@ -548,6 +588,8 @@ def test_builtin_admin_surfaces(
     expect(page.get_by_text("Currently:").first).to_be_visible()
     expect(page.locator(".inline-group[data-inline-type='stacked']")).to_be_visible()
     expect(page.locator(".readonly").first).to_be_visible()
+    page.evaluate("window.scrollTo(0, 0)")
+    _expect_history_button(page)
     _pair(page, "edition-375.png")
     _pair(page, "camera-375.png")
 
@@ -567,12 +609,13 @@ def test_builtin_admin_surfaces(
     _pair(page, "inline-errors-375.png")
 
     page.goto(f"{base_url}{catalog['history']}")
-    expect(
-        page.locator("#change-history tbody td, #change-history tbody th").first
-    ).to_have_attribute(
-        "data-label",
-        "Date/time",
-    )
+    expect(page.locator(".admin-mobile-history-item")).to_have_count(4)
+    expect(page.locator(".admin-mobile-history-day-label")).to_have_count(2)
+    expect(page.locator(".admin-mobile-history-added")).to_contain_text("Added.")
+    expect(page.locator(".admin-mobile-history-deleted")).to_contain_text("Deleted")
+    expect(page.locator(".admin-mobile-history-chip").first).to_be_visible()
+    expect(page.locator(".admin-mobile-history-count")).to_contain_text("4 entries")
+    expect(page.locator(".admin-mobile-history-meta").first).to_contain_text("shot")
     _pair(page, "history-375.png")
 
     page.goto(f"{base_url}{catalog['delete']}")
@@ -651,6 +694,8 @@ def test_builtin_admin_surfaces(
 
     page.goto(f"{base_url}{catalog['tag']}")
     expect(page.locator("input[name='_save']")).to_have_count(0)
+    page.evaluate("window.scrollTo(0, 0)")
+    _expect_history_button(page)
     _pair(page, "readonly-375.png")
 
     page.goto(f"{base_url}{catalog['edition']}")

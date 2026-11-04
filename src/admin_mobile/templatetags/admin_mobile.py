@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import re
+from collections.abc import Iterable
 
 from django import template
 from django.templatetags.static import static
@@ -14,6 +15,7 @@ from django.utils.translation import gettext
 
 from admin_mobile.colors import accent_declarations
 from admin_mobile.conf import AdminMobileSettings, get_config
+from admin_mobile.history import history_count, history_groups
 
 register = template.Library()
 
@@ -157,6 +159,20 @@ def _safe_field(value: object) -> str:
     if isinstance(value, str) and _FIELD_NAME.fullmatch(value):
         return value
     return ""
+
+
+@register.simple_tag
+def admin_mobile_history_groups(
+    action_list: Iterable[object],
+) -> list[dict[str, object]]:
+    """Log rows grouped by day, newest first, for the phone timeline."""
+
+    return history_groups(action_list)
+
+
+@register.simple_tag
+def admin_mobile_history_count(action_list: Iterable[object]) -> int:
+    return history_count(action_list)
 
 
 @register.simple_tag

@@ -36,11 +36,11 @@ Cards, a full-width action row, and a sticky bulk bar. Selecting a row hides the
 
 ## Change form
 
-Native date and time inputs, stacked inlines, and a submit bar that sits above the tab bar.
+Native date and time inputs, stacked inlines, and a submit bar that sits above the tab bar. History is a 44px button beside the title. The history page is a timeline grouped by day.
 
 | Change form | Edition | History |
 | --- | --- | --- |
-| <picture><source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/change-form-375-dark.png"><img alt="Book change form" src="docs/screenshots/change-form-375.png" width="250"></picture> | <picture><source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/edition-375-dark.png"><img alt="Edition change form" src="docs/screenshots/edition-375.png" width="250"></picture> | <picture><source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/history-375-dark.png"><img alt="Object history" src="docs/screenshots/history-375.png" width="250"></picture> |
+| <picture><source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/change-form-375-dark.png"><img alt="Book change form" src="docs/screenshots/change-form-375.png" width="250"></picture> | <picture><source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/edition-375-dark.png"><img alt="Edition change form" src="docs/screenshots/edition-375.png" width="250"></picture> | <picture><source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/history-375-dark.png"><img alt="Object history timeline" src="docs/screenshots/history-375.png" width="250"></picture> |
 
 ## Index and navigation
 
@@ -208,8 +208,8 @@ MIT. Copyright (c) 2026 Daniil Shamraev. See [LICENSE](LICENSE).
 
 ## Publishing
 
-0.1.0 is already on PyPI. This tree is 0.2.7 and is not published from here.
+0.1.0 is already on PyPI. This tree is 0.2.8 and is not published from here.
 
-1. Tag `0.2.7` when you want a release.
+1. Tag `0.2.8` when you want a release.
 2. Build: `uv build`.
 3. Publish: `uv publish` with a PyPI token.

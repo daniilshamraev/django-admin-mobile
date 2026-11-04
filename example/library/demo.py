@@ -6,7 +6,8 @@ set. Never enable ADMIN_MOBILE_DEMO on a shared host.
 
 from __future__ import annotations
 
-from datetime import date, datetime, time
+import json
+from datetime import date, datetime, time, timedelta
 
 from django.conf import settings
 from django.core.files.base import ContentFile
@@ -39,6 +40,7 @@ def seed_demo(*args: object, **kwargs: object) -> bool:
         user_model.objects.create_superuser("admin", "admin@example.com", "admin")
 
     if Author.objects.exists():
+        _seed_notes_history()
         return False
 
     lovelace = Author.objects.create(name="Ada Lovelace", birth_date=date(1815, 12, 10))
@@ -141,6 +143,7 @@ def seed_demo(*args: object, **kwargs: object) -> bool:
         at_time=time(18, 30),
         when=timezone.make_aware(datetime(2026, 4, 2, 18, 30)),
     )
+    _seed_notes_history()
     Payment.objects.create(
         payer_name="Мария Александровна Волконская",
         vk_id="123456789012345678",
@@ -153,3 +156,46 @@ def seed_demo(*args: object, **kwargs: object) -> bool:
         currency="RUB",
     )
     return True
+
+
+def _seed_notes_history() -> None:
+    from django.contrib.admin.models import ADDITION, CHANGE, DELETION, LogEntry
+    from django.contrib.auth import get_user_model
+    from django.contrib.contenttypes.models import ContentType
+
+    from library.models import Book
+
+    notes = Book.objects.filter(title="Notes on the Analytical Engine").first()
+    user = get_user_model().objects.filter(username="admin").first()
+    if notes is None or user is None:
+        return
+    content_type = ContentType.objects.get_for_model(notes)
+    if LogEntry.objects.filter(
+        object_id=str(notes.pk), content_type=content_type
+    ).exists():
+        return
+    now = timezone.now()
+    rows = (
+        (now - timedelta(days=2, hours=4), ADDITION, "Added."),
+        (
+            now - timedelta(days=2, hours=1),
+            CHANGE,
+            json.dumps([{"changed": {"fields": ["Title", "Status"]}}]),
+        ),
+        (
+            now - timedelta(days=1, hours=5),
+            CHANGE,
+            json.dumps([{"changed": {"fields": ["Pages", "Notes"]}}]),
+        ),
+        (now - timedelta(days=1, hours=1), DELETION, "Deleted chapter “Note G”."),
+    )
+    for when, flag, message in rows:
+        LogEntry.objects.create(
+            user_id=user.pk,
+            content_type_id=content_type.pk,
+            object_id=str(notes.pk),
+            object_repr=str(notes)[:200],
+            action_flag=flag,
+            change_message=message,
+            action_time=when,
+        )
