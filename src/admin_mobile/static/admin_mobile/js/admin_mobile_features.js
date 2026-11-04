@@ -337,6 +337,7 @@
         bar.className = "admin-mobile-bulkbar";
         bar.hidden = true;
         var label = document.createElement("span");
+        label.className = "admin-mobile-bulk-count";
         var select = actions.querySelector("select");
         var run = actions.querySelector("button, input[type=submit]");
         if (select) {
@@ -527,16 +528,34 @@
         }, { passive: true });
     }
 
-    function applyCardConfig() {
-        var node = document.getElementById("admin-mobile-card-config");
-        if (!node) {
+    function ensureCardTitle(row) {
+        if (row.querySelector(":scope > .admin-mobile-card-title")) {
             return;
         }
-        var cfgCard;
-        try {
-            cfgCard = JSON.parse(node.textContent || "{}");
-        } catch (error) {
-            return;
+        var link = row.querySelector(":scope > th a[href], :scope > td a[href]");
+        var cell = link ? link.closest("th, td") : null;
+        if (!cell || cell.classList.contains("action-checkbox")) {
+            cell = null;
+            Array.prototype.forEach.call(row.children, function (item) {
+                if (!cell && (item.tagName === "TH" || item.tagName === "TD") && !item.classList.contains("action-checkbox")) {
+                    cell = item;
+                }
+            });
+        }
+        if (cell) {
+            cell.classList.add("admin-mobile-card-title");
+        }
+    }
+
+    function applyCardConfig() {
+        var node = document.getElementById("admin-mobile-card-config");
+        var cfgCard = {};
+        if (node) {
+            try {
+                cfgCard = JSON.parse(node.textContent || "{}");
+            } catch (error) {
+                cfgCard = {};
+            }
         }
         function fieldOf(cell) {
             var match = /(?:^|\s)field-([A-Za-z0-9_]+)/.exec(cell.className || "");
@@ -562,6 +581,7 @@
                     cell.classList.add("admin-mobile-card-extra");
                 }
             });
+            ensureCardTitle(row);
         });
     }
 

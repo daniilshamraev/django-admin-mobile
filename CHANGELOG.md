@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.5
+
+- A selected changelist card uses a light accent tint and outline instead of Django’s flat selected-row fill.
+- The checkbox and the linked column share one left-aligned title line. Field labels stay on the rows below, about 40% wide, with values wrapping in the rest of the row.
+- Rich cell HTML and list-editable inputs stay inside the value column. The sticky bulk bar is full width above the tab bar: the count, the action menu, and Run share one row.
+
 ## 0.2.4
 
 - The action menu and Run share one 44px row and the same corner radius. Run stays only as wide as its label.

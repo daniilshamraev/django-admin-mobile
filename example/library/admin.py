@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 from django.contrib import admin
+from django.templatetags.static import static
+from django.utils.html import format_html
 
 from admin_mobile.mixins import MobileAdminMixin
 from library.models import (
@@ -10,6 +12,7 @@ from library.models import (
     Chapter,
     Citation,
     Edition,
+    Payment,
     Publisher,
     Revision,
     Series,
@@ -140,6 +143,46 @@ class RevisionAdmin(admin.ModelAdmin):
     list_editable = ("ready", "note")
     list_per_page = 2
     search_fields = ("label",)
+
+
+@admin.action(description="Отметить проверенным")
+def mark_reviewed(
+    modeladmin: admin.ModelAdmin, request: object, queryset: object
+) -> None:
+    del modeladmin, request
+    queryset.update(reviewed=True)
+
+
+@admin.register(Payment)
+class PaymentAdmin(MobileAdminMixin, admin.ModelAdmin):
+    """No card-title hint: the link column itself has to become the title."""
+
+    list_display = (
+        "id",
+        "payer",
+        "amount",
+        "system",
+        "status",
+        "paid_on",
+        "external_id",
+        "comment",
+        "currency",
+    )
+    list_display_links = ("id",)
+    list_editable = ("amount",)
+    list_per_page = 10
+    actions = (mark_reviewed,)
+
+    @admin.display(description="Пользователь")
+    def payer(self, obj: Payment) -> str:
+        return format_html(
+            '<img alt="" src="{}" width="16" height="16"> <strong>{}</strong> '
+            '(<a href="https://vk.com/id{}">vk.com/id{}</a>)',
+            static("admin/img/icon-viewlink.svg"),
+            obj.payer_name,
+            obj.vk_id,
+            obj.vk_id,
+        )
 
 
 @admin.register(Appointment)

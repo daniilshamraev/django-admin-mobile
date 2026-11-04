@@ -59,6 +59,21 @@
         );
     }
 
+    function wrapCardValue(cell) {
+        if (cell.classList.contains("action-checkbox")) {
+            return;
+        }
+        if (cell.querySelector(":scope > .admin-mobile-value")) {
+            return;
+        }
+        var value = document.createElement("span");
+        value.className = "admin-mobile-value";
+        while (cell.firstChild) {
+            value.appendChild(cell.firstChild);
+        }
+        cell.appendChild(value);
+    }
+
     function labelRow(row, labels) {
         var cells = row.querySelectorAll(":scope > th, :scope > td");
         Array.prototype.forEach.call(cells, function (cell, index) {
@@ -68,6 +83,7 @@
             } else {
                 cell.removeAttribute("data-label");
             }
+            wrapCardValue(cell);
         });
     }
 

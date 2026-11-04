@@ -90,8 +90,11 @@ html.admin-mobile .admin-mobile-native {
         background: var(--body-bg);
     }
 
-    html.admin-mobile-cards #result_list tbody tr.selected {
-        background: var(--selected-bg);
+    html.admin-mobile-cards #result_list tbody tr.selected,
+    html.admin-mobile-cards #changelist tbody tr:has(.action-select:checked) {
+        background: color-mix(in srgb, var(--button-bg) 14%, var(--body-bg));
+        border-color: color-mix(in srgb, var(--button-bg) 55%, var(--hairline-color));
+        box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--button-bg) 65%, transparent);
     }
 
     html.admin-mobile-cards #result_list tbody td,
@@ -674,12 +677,17 @@ html.admin-mobile-cards .admin-mobile-select-all {
         height: 22px;
     }
 
-    html.admin-mobile-cards #result_list tbody input:not([type="checkbox"]):not([type="hidden"]),
-    html.admin-mobile-cards #result_list tbody select {
-        width: auto;
-        max-width: 58%;
+    html.admin-mobile-cards #result_list tbody .admin-mobile-value input:not([type="checkbox"]):not([type="hidden"]),
+    html.admin-mobile-cards #result_list tbody .admin-mobile-value select,
+    html.admin-mobile-cards #result_list tbody .admin-mobile-value textarea {
+        display: block;
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
         min-height: 44px;
+        margin: 0;
         font-size: 16px;
+        text-align: end;
         box-sizing: border-box;
     }
 

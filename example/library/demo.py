@@ -26,6 +26,7 @@ def seed_demo(*args: object, **kwargs: object) -> bool:
         Chapter,
         Citation,
         Edition,
+        Payment,
         Publisher,
         Revision,
         Series,
@@ -139,5 +140,16 @@ def seed_demo(*args: object, **kwargs: object) -> bool:
         on_date=date(2026, 4, 2),
         at_time=time(18, 30),
         when=timezone.make_aware(datetime(2026, 4, 2, 18, 30)),
+    )
+    Payment.objects.create(
+        payer_name="Мария Александровна Волконская",
+        vk_id="123456789012345678",
+        amount="1490.50",
+        system=Payment.System.WALLET,
+        status="Оплачен",
+        paid_on=date(2026, 3, 2),
+        external_id="pay-1843-notes",
+        comment="Перевод за второе издание",
+        currency="RUB",
     )
     return True

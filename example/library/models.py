@@ -160,6 +160,38 @@ class Revision(models.Model):
         return self.label
 
 
+class Payment(models.Model):
+    """Long Russian labels, rich HTML, and an editable price."""
+
+    class System(models.TextChoices):
+        CARD = "card", "Банковская карта"
+        WALLET = "wallet", "Электронный кошелёк"
+
+    payer_name = models.CharField("Имя плательщика", max_length=200)
+    vk_id = models.CharField("Профиль", max_length=64)
+    amount = models.DecimalField("Цена в рублях", max_digits=12, decimal_places=2)
+    system = models.CharField(
+        "Платежная система",
+        max_length=20,
+        choices=System.choices,
+        default=System.CARD,
+    )
+    status = models.CharField("Статус платежа", max_length=40, default="Ожидает")
+    paid_on = models.DateField("Дата оплаты", null=True, blank=True)
+    external_id = models.CharField("Внешний идентификатор", max_length=80, blank=True)
+    comment = models.CharField("Комментарий кассира", max_length=200, blank=True)
+    currency = models.CharField("Валюта расчёта", max_length=12, default="RUB")
+    reviewed = models.BooleanField("Проверен", default=False)
+
+    class Meta:
+        verbose_name = "Платёж"
+        verbose_name_plural = "Платежи"
+        ordering = ["-id"]
+
+    def __str__(self) -> str:
+        return self.payer_name
+
+
 class Appointment(models.Model):
     """Kept on Django's calendar and clock widgets (no native date mixin)."""
 

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from datetime import date, datetime, time
+from decimal import Decimal
 from pathlib import Path
 
 import pytest
@@ -19,6 +20,7 @@ from library.models import (
     Chapter,
     Citation,
     Edition,
+    Payment,
     Publisher,
     Revision,
     Series,
@@ -134,6 +136,17 @@ def catalog(live_server: object) -> dict[str, str]:
         at_time=time(18, 30),
         when=timezone.make_aware(datetime(2026, 4, 2, 18, 30)),
     )
+    Payment.objects.create(
+        payer_name="Мария Александровна Волконская",
+        vk_id="123456789012345678",
+        amount=Decimal("1490.50"),
+        system=Payment.System.WALLET,
+        status="Оплачен",
+        paid_on=date(2026, 3, 2),
+        external_id="pay-1843-notes",
+        comment="Перевод за второе издание",
+        currency="RUB",
+    )
     return {
         "change": f"/admin/library/book/{notes.pk}/change/",
         "list": "/admin/library/book/",
@@ -144,6 +157,7 @@ def catalog(live_server: object) -> dict[str, str]:
         "revisions": "/admin/library/revision/",
         "appointment": f"/admin/library/appointment/{visit.pk}/change/",
         "tag": f"/admin/library/tag/{tag.pk}/change/",
+        "payments": "/admin/library/payment/",
         "search": "/admin/admin-mobile/search/?q=Notes",
         "recent": "/admin/admin-mobile/recent/",
     }
@@ -321,6 +335,53 @@ def test_builtin_admin_surfaces(
     page.goto(f"{base_url}{catalog['revisions']}")
     expect(page.locator("#result_list input[name$='-note']").first).to_be_visible()
     _pair(page, "changelist-editable-375.png")
+
+    page.goto(f"{base_url}{catalog['payments']}")
+    payer = page.locator("#result_list .field-payer .admin-mobile-value").first
+    expect(payer).to_contain_text("vk.com/id123456789012345678")
+    title = page.locator("#result_list .admin-mobile-card-title").first
+    expect(title).to_be_visible()
+    label_text = title.evaluate(
+        "element => getComputedStyle(element, '::before').content"
+    )
+    assert label_text == "none"
+    wrapped = payer.evaluate("element => getComputedStyle(element).overflowWrap")
+    assert wrapped == "anywhere"
+    price = page.locator("#result_list .field-amount input").first
+    expect(price).to_be_visible()
+    aligned = price.evaluate(
+        """element => {
+            const value = element.closest('.admin-mobile-value');
+            const valueBox = value.getBoundingClientRect();
+            const inputBox = element.getBoundingClientRect();
+            return Math.abs(inputBox.right - valueBox.right) < 2
+                && inputBox.left >= valueBox.left - 1;
+        }"""
+    )
+    assert aligned is True
+    page.locator("#result_list .action-checkbox input").first.check()
+    bar = page.locator(".admin-mobile-bulkbar")
+    expect(bar).to_be_visible()
+    row_fit = bar.evaluate(
+        """element => {
+            const select = element.querySelector('select');
+            const run = element.querySelector('button, input[type=submit]');
+            const barBox = element.getBoundingClientRect();
+            const selectBox = select.getBoundingClientRect();
+            const runBox = run.getBoundingClientRect();
+            return barBox.left >= -1
+                && barBox.right <= window.innerWidth + 1
+                && Math.abs(selectBox.top - runBox.top) < 4
+                && Math.abs(selectBox.height - runBox.height) < 3
+                && selectBox.height >= 40;
+        }"""
+    )
+    assert row_fit is True
+    tint = page.locator("#result_list tbody tr").first.evaluate(
+        "element => getComputedStyle(element).backgroundColor"
+    )
+    assert tint != "rgb(228, 228, 228)"
+    _pair(page, "payments-375.png")
 
     page.goto(f"{base_url}{catalog['edition']}")
     expect(page.locator("input[name='series']")).to_be_visible()
