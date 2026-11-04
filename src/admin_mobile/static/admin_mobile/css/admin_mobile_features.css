@@ -1351,7 +1351,6 @@ html[data-theme="auto"].admin-mobile {
     html.admin-mobile body.change-list #changelist .actions,
     html.admin-mobile body.change-list .toplinks,
     html.admin-mobile body.change-list .admin-mobile-sort,
-    html.admin-mobile body.change-list .admin-mobile-select-all,
     html.admin-mobile body.change-list .admin-mobile-filter-toggle {
         width: 100%;
         max-width: 100%;
@@ -1364,7 +1363,6 @@ html[data-theme="auto"].admin-mobile {
     }
 
     html.admin-mobile body.change-list .toplinks,
-    html.admin-mobile body.change-list .admin-mobile-select-all,
     html.admin-mobile body.change-list #changelist .actions .action-counter {
         padding: 0;
         margin-left: 0;
@@ -1372,48 +1370,87 @@ html[data-theme="auto"].admin-mobile {
     }
 
     html.admin-mobile body.change-list #changelist .actions {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) auto;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
         align-items: center;
         gap: var(--am-space);
+        padding: 0;
     }
 
-    html.admin-mobile body.change-list #changelist .actions label {
+    html.admin-mobile body.change-list #changelist .actions label:not(.admin-mobile-select-all) {
         display: block;
-        grid-column: 1;
-        grid-row: 1;
-        width: 100%;
+        flex: 1 1 calc(100% - 5.5rem);
+        width: auto;
+        min-width: 0;
         margin: 0;
         font-size: 0;
+        line-height: 0;
     }
 
     html.admin-mobile body.change-list #changelist .actions select,
     html.admin-mobile body.change-list .admin-mobile-sort select {
         display: block;
+        flex: 1 1 auto;
         width: 100%;
         height: var(--am-tap);
         min-height: var(--am-tap);
+        max-height: var(--am-tap);
         margin: 0;
         padding: 0 var(--am-pad);
+        border-radius: var(--am-radius);
         font-size: 16px;
+        line-height: calc(var(--am-tap) - 2px);
         box-sizing: border-box;
     }
 
     html.admin-mobile body.change-list #changelist .actions .button,
     html.admin-mobile body.change-list #changelist .actions button {
-        grid-column: 2;
-        grid-row: 1;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex: 0 0 auto;
         width: auto;
         height: var(--am-tap);
+        min-height: var(--am-tap);
+        max-height: var(--am-tap);
         margin: 0;
         padding: 0 var(--am-pad);
+        border: 1px solid var(--border-color);
+        border-radius: var(--am-radius);
+        box-sizing: border-box;
+        font-size: 16px;
+        line-height: 1;
     }
 
     html.admin-mobile body.change-list #changelist .actions .action-counter {
-        grid-column: 1 / -1;
-        grid-row: 2;
+        flex: 0 1 auto;
+        order: 2;
+        width: auto;
+        margin: 0 0 0 auto;
+        padding: 0;
+    }
+
+    html.admin-mobile body.change-list #changelist .actions .admin-mobile-select-all {
+        display: inline-flex;
+        flex-direction: row;
+        align-items: center;
+        order: 1;
+        gap: var(--am-space);
+        flex: 0 1 auto;
+        width: auto;
+        min-height: 0;
         margin: 0;
         padding: 0;
+        font-size: 0.875rem;
+        line-height: 1.2;
+        color: var(--body-fg);
+    }
+
+    html.admin-mobile body.change-list #changelist .actions .admin-mobile-select-all input {
+        width: 22px;
+        height: 22px;
+        margin: 0;
     }
 
     html.admin-mobile body.change-list .toplinks {
@@ -1421,20 +1458,40 @@ html[data-theme="auto"].admin-mobile {
         gap: var(--am-space);
     }
 
-    html.admin-mobile body.change-list .admin-mobile-select-all {
-        min-height: var(--am-tap);
-        padding: 0;
-    }
-
     html.admin-mobile-cards body.change-list #result_list tbody tr {
-        margin: 0;
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr);
+        align-items: center;
+        column-gap: var(--am-space);
+        margin: 0 0 var(--am-space);
         padding: var(--am-pad);
     }
 
+    html.admin-mobile-cards body.change-list #result_list tbody td,
+    html.admin-mobile-cards body.change-list #result_list tbody th {
+        grid-column: 1 / -1;
+    }
+
     html.admin-mobile-cards body.change-list #result_list .action-checkbox {
+        display: flex;
+        align-items: center;
+        grid-column: 1;
+        grid-row: 1;
+        width: auto;
         min-height: 0;
-        padding: 0 0 var(--am-space);
+        padding: 0;
         border: 0;
+    }
+
+    html.admin-mobile-cards body.change-list #result_list .action-checkbox + th,
+    html.admin-mobile-cards body.change-list #result_list .action-checkbox + td,
+    html.admin-mobile-cards body.change-list #result_list .admin-mobile-card-title {
+        grid-column: 2;
+        grid-row: 1;
+        min-height: 0;
+        padding-top: 0;
+        padding-bottom: 0;
+        border-bottom: 0;
     }
 }
 

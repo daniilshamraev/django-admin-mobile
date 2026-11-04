@@ -138,7 +138,7 @@
     function initSelectAll(table) {
         var toggle = document.getElementById("action-toggle");
         var parent = table.parentElement;
-        if (!toggle || !parent || parent.querySelector(".admin-mobile-select-all")) {
+        if (!toggle || !parent || document.getElementById("admin-mobile-select-all")) {
             return;
         }
         var label = document.createElement("label");
@@ -147,8 +147,13 @@
         input.type = "checkbox";
         input.id = "admin-mobile-select-all";
         label.appendChild(input);
-        label.appendChild(document.createTextNode(" " + selectLabel()));
-        table.insertAdjacentElement("beforebegin", label);
+        label.appendChild(document.createTextNode(" Select all"));
+        var actions = document.querySelector("#changelist .actions");
+        if (actions) {
+            actions.appendChild(label);
+        } else {
+            table.insertAdjacentElement("beforebegin", label);
+        }
         input.addEventListener("change", function () {
             if (toggle.checked !== input.checked) {
                 toggle.click();

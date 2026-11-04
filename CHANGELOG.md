@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.4
+
+- The action menu and Run share one 44px row and the same corner radius. Run stays only as wide as its label.
+- “Select all” sits in that actions block. Each card keeps one checkbox, on the same line as the title.
+
 ## 0.2.3
 
 - Changelist controls share one left and right edge. The action menu and Sort by are the same full-width select with 16px of inner padding. The card no longer repeats a second “Select” label.
