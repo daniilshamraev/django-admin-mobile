@@ -195,6 +195,7 @@
             return;
         }
         var bar = document.createElement("nav");
+        bar.id = "admin-mobile-tabbar";
         bar.className = "admin-mobile-tabbar";
         bar.setAttribute("aria-label", "Admin");
         function link(href, text, iconName) {
@@ -440,25 +441,33 @@
         var hint = document.createElement("div");
         hint.className = "admin-mobile-ptr";
         hint.textContent = "Pull to refresh";
-        hint.hidden = false;
+        hint.hidden = true;
         var list = document.getElementById("result_list");
         list.parentElement.insertBefore(hint, list);
         var startY = 0;
         document.addEventListener("touchstart", function (event) {
             if (window.scrollY <= 0 && event.touches && event.touches[0]) {
                 startY = event.touches[0].clientY;
-                hint.hidden = false;
+            } else {
+                startY = 0;
             }
+        }, { passive: true });
+        document.addEventListener("touchmove", function (event) {
+            if (!startY || window.scrollY > 0 || !event.touches || !event.touches[0]) {
+                return;
+            }
+            hint.hidden = event.touches[0].clientY - startY < 16;
         }, { passive: true });
         document.addEventListener("touchend", function (event) {
             if (!event.changedTouches || !event.changedTouches[0]) {
                 return;
             }
-            if (window.scrollY <= 0 && event.changedTouches[0].clientY - startY > 80) {
+            if (startY && window.scrollY <= 0 && event.changedTouches[0].clientY - startY > 80) {
                 window.location.reload();
-            } else {
-                hint.hidden = true;
+                return;
             }
+            hint.hidden = true;
+            startY = 0;
         }, { passive: true });
     }
 

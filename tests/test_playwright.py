@@ -264,6 +264,9 @@ def _theme(page: Page, name: str) -> None:
         "(theme) => document.documentElement.setAttribute('data-theme', theme)",
         name,
     )
+    # Django fades link color and background for 150ms. Wait so screenshots
+    # show the settled theme, not the previous one mid-transition.
+    page.wait_for_timeout(220)
 
 
 def _pair(page: Page, name: str) -> None:

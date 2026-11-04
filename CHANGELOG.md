@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.2.2
+
+- Tab labels no longer pick up Django’s link underline. The current tab uses a stronger pill and a bottom bar.
+- Index module captions and model rows are inset 16px. Captions keep the card’s top radius.
+- Changelist “Save this list” and “Run” use button colors in light and dark. Date chips use the page surface. The filter label, action row, and selection count share the 16px content edge. Pull to refresh stays hidden until a pull starts.
+- “Add another” keeps the plus icon and the label together, centered in the row.
+- Search results, breadcrumbs, field rows, and the close button use the same 16px inset and button colors.
+
 ## 0.2.1
 
 - Header is one row: sidebar icon, ellipsized title in `--header-branding-color`, account sheet, theme toggle. `ACCENT` no longer sets `--accent`, so the title stays readable on `--header-bg`.
