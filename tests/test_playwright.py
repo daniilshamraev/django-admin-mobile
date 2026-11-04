@@ -219,10 +219,30 @@ def test_admin_screenshots_at_phone_width(
     expect(page.locator("#result_list .action-checkbox input").first).to_be_checked()
 
     page.locator("#admin-mobile-filter-toggle").click()
-    expect(page.locator("#changelist-filter")).to_be_visible()
-    expect(page.locator("#changelist-filter").get_by_text("By status")).to_be_visible()
+    sheet = page.locator("#changelist-filter")
+    expect(sheet).to_be_visible()
+    expect(sheet.get_by_text("By status")).to_be_visible()
+    expect(page.locator(".admin-mobile-filter-backdrop")).to_be_visible()
+    expect(page.locator(".admin-mobile-filter-title")).to_have_text("Filters")
+    expect(page.locator(".admin-mobile-filter-reset")).to_be_visible()
+    expect(page.locator(".admin-mobile-filter-close")).to_be_visible()
+    expect(page.locator(".admin-mobile-filter-apply")).to_have_text("Show results")
+    arrow = sheet.locator("details > summary").first.evaluate(
+        "element => getComputedStyle(element, '::before').content"
+    )
+    assert "↓" not in arrow
+    assert "→" not in arrow
+    radius = sheet.evaluate("element => getComputedStyle(element).borderTopLeftRadius")
+    assert radius == "16px"
+    date_filter = sheet.locator("details").filter(has_text="date")
+    if date_filter.count():
+        date_input = date_filter.locator(
+            "input[type='search'], input.range-filter, input[type='date']"
+        ).first
+        expect(date_input).to_be_visible()
     _pair(page, "filters-375.png")
-    page.locator("#admin-mobile-filter-toggle").click()
+    page.locator(".admin-mobile-filter-apply").click()
+    expect(sheet).to_be_hidden()
 
     page.set_viewport_size({"width": 800, "height": 900})
     page.goto(f"{base_url}{catalog['list']}")
@@ -266,6 +286,37 @@ def test_admin_screenshots_at_phone_width(
     expect(title_inputs).to_have_count(before_add)
 
     _pair(page, "change-form-375.png")
+
+    page.goto(f"{base_url}{catalog['list']}")
+    expect(page.locator("#result_list")).to_be_visible()
+    page.evaluate(
+        """() => {
+          document.querySelectorAll('link[rel="stylesheet"]').forEach((link) => {
+            if (link.href.includes("admin_mobile")) {
+              link.disabled = true;
+            }
+          });
+          const root = document.documentElement;
+          root.className = root.className
+            .split(/\\s+/)
+            .filter((name) => name && !name.startsWith("admin-mobile"))
+            .join(" ");
+          document.querySelectorAll(
+            [
+              ".admin-mobile-filter-toggle",
+              ".admin-mobile-tabbar",
+              ".admin-mobile-bulkbar",
+              ".admin-mobile-filter-backdrop",
+              ".admin-mobile-save-model",
+              ".admin-mobile-sort",
+              ".admin-mobile-select-all",
+              ".admin-mobile-welcome",
+              ".admin-mobile-ptr",
+            ].join(",")
+          ).forEach((node) => node.remove());
+        }"""
+    )
+    _pair(page, "stock-changelist-375.png")
 
 
 def _shot(page: Page, name: str) -> None:

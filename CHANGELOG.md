@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.7
+
+- The phone filter panel is a bottom sheet: dimmed backdrop, 16px top corners, grab handle, sticky Filters / Reset / Close header, chevrons, 44px options with an accent check and right-aligned counts, and a sticky Show results button.
+- Long filter lists get a search field. Date and range inputs stay in the sheet. With JavaScript off, the filters stay inline.
+
 ## 0.2.6
 
 - “Save this list” is a full-width 44px control on the same 16px edge as the rest of the changelist.

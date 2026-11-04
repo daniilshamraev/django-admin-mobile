@@ -820,7 +820,7 @@ html[data-theme="auto"].admin-mobile {
         min-height: 0;
     }
 
-    html.admin-mobile-filters #changelist-filter > h2,
+    html.admin-mobile-filters #changelist-filter h2,
     html.admin-mobile-filters #changelist-filter-header {
         position: absolute;
         width: 1px;
@@ -838,20 +838,303 @@ html[data-theme="auto"].admin-mobile {
         text-decoration: none;
     }
 
+    html.admin-mobile-filter-sheet .admin-mobile-filter-backdrop {
+        position: fixed;
+        inset: 0;
+        z-index: 79;
+        background: color-mix(in srgb, var(--body-fg) 45%, transparent);
+    }
+
+    html.admin-mobile-filter-sheet .admin-mobile-filter-backdrop[hidden] {
+        display: none;
+    }
+
+    html.admin-mobile-filter-sheet body.admin-mobile-filter-locked {
+        overflow: hidden;
+    }
+
     html.admin-mobile-filter-sheet #changelist-filter.admin-mobile-open {
+        display: flex;
+        flex-direction: column;
         position: fixed;
         z-index: 80;
         left: 0;
         right: 0;
         bottom: 0;
-        max-height: min(70vh, 32rem);
+        width: auto;
+        max-width: 100%;
+        max-height: min(78vh, 36rem);
+        flex: none;
         margin: 0;
-        padding: 8px var(--am-pad) var(--am-pad);
-        overflow: auto;
+        padding: 0;
+        overflow: hidden;
         border-radius: 16px 16px 0 0;
-        background: var(--am-surface);
-        color: var(--am-ink);
-        box-shadow: 0 -8px 24px var(--am-shadow);
+        background: var(--body-bg);
+        color: var(--body-fg);
+        box-shadow: 0 -12px 40px var(--am-shadow);
+    }
+
+    html.admin-mobile-filter-sheet #changelist-filter .admin-mobile-filter-chrome,
+    html.admin-mobile-filter-sheet #changelist-filter .admin-mobile-filter-foot {
+        display: none;
+    }
+
+    html.admin-mobile-filter-sheet #changelist-filter.admin-mobile-open .admin-mobile-filter-chrome {
+        display: block;
+        position: sticky;
+        top: 0;
+        z-index: 2;
+        flex: 0 0 auto;
+        background: var(--body-bg);
+    }
+
+    html.admin-mobile-filter-sheet #changelist-filter .admin-mobile-filter-handle {
+        display: block;
+        width: 36px;
+        height: 4px;
+        margin: 8px auto 4px;
+        border-radius: 999px;
+        background: var(--border-color);
+    }
+
+    html.admin-mobile-filter-sheet #changelist-filter .admin-mobile-filter-head {
+        display: flex;
+        align-items: center;
+        gap: var(--am-space);
+        min-height: var(--am-tap);
+        margin: 0;
+        padding: 0 var(--am-space) 0 var(--am-pad);
+    }
+
+    html.admin-mobile-filter-sheet #changelist-filter .admin-mobile-filter-title {
+        flex: 1 1 auto;
+        margin: 0;
+        color: var(--body-fg);
+        font-size: 1.0625rem;
+        font-weight: 700;
+        line-height: 1.2;
+    }
+
+    html.admin-mobile-filter-sheet #changelist-filter .admin-mobile-filter-reset {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex: 0 0 auto;
+        min-height: var(--am-tap);
+        margin: 0;
+        padding: 0 8px;
+        border: 0;
+        background: transparent;
+        color: var(--link-fg);
+        font: inherit;
+        font-weight: 600;
+        text-decoration: none;
+    }
+
+    html.admin-mobile-filter-sheet #changelist-filter .admin-mobile-filter-close {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex: 0 0 auto;
+        width: var(--am-tap);
+        height: var(--am-tap);
+        margin: 0;
+        padding: 0;
+        border: 0;
+        border-radius: var(--am-radius);
+        background: transparent;
+        color: var(--body-fg);
+        font: inherit;
+        font-size: 1.75rem;
+        line-height: 1;
+        cursor: pointer;
+    }
+
+    html.admin-mobile-filter-sheet #changelist-filter .admin-mobile-filter-body {
+        flex: 1 1 auto;
+        min-height: 0;
+        overflow: auto;
+        padding: 0 0 8px;
+    }
+
+    html.admin-mobile-filter-sheet #changelist-filter.admin-mobile-open .admin-mobile-filter-foot {
+        display: block;
+        position: sticky;
+        bottom: 0;
+        z-index: 2;
+        flex: 0 0 auto;
+        margin: 0;
+        padding: var(--am-space) var(--am-pad) calc(var(--am-space) + env(safe-area-inset-bottom));
+        border-top: 1px solid var(--hairline-color);
+        background: var(--body-bg);
+    }
+
+    html.admin-mobile-filter-sheet #changelist-filter .admin-mobile-filter-apply {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: var(--am-tap);
+        min-height: var(--am-tap);
+        margin: 0;
+        padding: 0 var(--am-pad);
+        box-sizing: border-box;
+        border: 0;
+        border-radius: var(--am-radius);
+        background: var(--button-bg);
+        color: var(--button-fg);
+        font: inherit;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    html.admin-mobile-filter-sheet #changelist-filter details {
+        margin: 0;
+        border-bottom: 1px solid var(--hairline-color);
+    }
+
+    html.admin-mobile-filter-sheet #changelist-filter details > summary {
+        display: flex;
+        align-items: center;
+        gap: var(--am-space);
+        min-height: var(--am-tap);
+        margin: 0;
+        padding: 0 var(--am-pad);
+        list-style: none;
+        color: var(--body-fg);
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    html.admin-mobile-filter-sheet #changelist-filter details > summary::-webkit-details-marker {
+        display: none;
+    }
+
+    html.admin-mobile-filter-sheet #changelist-filter details > summary::before {
+        content: "";
+        flex: 0 0 auto;
+        width: 0.45rem;
+        height: 0.45rem;
+        margin: 0 2px 0 0;
+        border-right: 2px solid var(--body-quiet-color);
+        border-bottom: 2px solid var(--body-quiet-color);
+        transform: rotate(-45deg);
+    }
+
+    html.admin-mobile-filter-sheet #changelist-filter details[open] > summary::before {
+        content: "";
+        transform: rotate(45deg);
+    }
+
+    html.admin-mobile-filter-sheet #changelist-filter ul {
+        margin: 0;
+        padding: 0 0 8px;
+        border-bottom: 0;
+    }
+
+    html.admin-mobile-filter-sheet #changelist-filter li {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+
+    html.admin-mobile-filter-sheet #changelist-filter li[hidden] {
+        display: none;
+    }
+
+    html.admin-mobile-filter-sheet #changelist-filter li.selected {
+        margin-left: 0;
+        margin-right: 0;
+        padding-left: 0;
+        padding-right: 0;
+        border-left: 0;
+        border-right: 0;
+        background: transparent;
+    }
+
+    html.admin-mobile-filter-sheet #changelist-filter li a {
+        display: flex;
+        align-items: center;
+        gap: var(--am-space);
+        min-height: var(--am-tap);
+        margin: 0 var(--am-space);
+        padding: 0 var(--am-space);
+        border-radius: var(--am-radius);
+        color: var(--body-fg);
+        text-decoration: none;
+    }
+
+    html.admin-mobile-filter-sheet #changelist-filter li.selected a {
+        background: color-mix(in srgb, var(--button-bg) 16%, var(--body-bg));
+        color: var(--body-fg);
+        font-weight: 600;
+    }
+
+    html.admin-mobile-filter-sheet #changelist-filter li.selected a::before {
+        content: "";
+        flex: 0 0 auto;
+        width: 0.35rem;
+        height: 0.65rem;
+        margin-top: -2px;
+        border-right: 2px solid var(--button-bg);
+        border-bottom: 2px solid var(--button-bg);
+        transform: rotate(45deg);
+    }
+
+    html.admin-mobile-filter-sheet #changelist-filter .admin-mobile-filter-choice {
+        min-width: 0;
+        overflow-wrap: anywhere;
+    }
+
+    html.admin-mobile-filter-sheet #changelist-filter .admin-mobile-filter-count {
+        margin-inline-start: auto;
+        color: var(--body-quiet-color);
+        font-weight: 500;
+        font-variant-numeric: tabular-nums;
+    }
+
+    html.admin-mobile-filter-sheet #changelist-filter .admin-mobile-filter-search,
+    html.admin-mobile-filter-sheet #changelist-filter .admindatefilter input,
+    html.admin-mobile-filter-sheet #changelist-filter input.range-filter,
+    html.admin-mobile-filter-sheet #changelist-filter input[type="date"],
+    html.admin-mobile-filter-sheet #changelist-filter .vDateField {
+        display: block;
+        width: calc(100% - 32px);
+        max-width: calc(100% - 32px);
+        height: var(--am-tap);
+        min-height: var(--am-tap);
+        margin: 0 var(--am-pad) var(--am-space);
+        padding: 0 12px;
+        box-sizing: border-box;
+        border: 1px solid var(--border-color);
+        border-radius: var(--am-radius);
+        background: var(--body-bg);
+        color: var(--body-fg);
+        font: inherit;
+        font-size: 16px;
+    }
+
+    html.admin-mobile-filter-sheet #changelist-filter .admindatefilter,
+    html.admin-mobile-filter-sheet #changelist-filter #changelist-filter-extra-actions {
+        margin: 0;
+        padding: 4px 0 8px;
+        border-bottom: 1px solid var(--hairline-color);
+        font-size: inherit;
+    }
+
+    html.admin-mobile-filter-sheet #changelist-filter #changelist-filter-extra-actions h3 {
+        margin: 0;
+        font-weight: 500;
+    }
+
+    html.admin-mobile-filter-sheet #changelist-filter #changelist-filter-extra-actions a {
+        display: flex;
+        align-items: center;
+        min-height: var(--am-tap);
+        margin: 0;
+        padding: 0 var(--am-pad);
+        color: var(--link-fg);
+        text-decoration: none;
     }
 
     html.admin-mobile .admin-mobile-filter-badge {
@@ -1646,6 +1929,19 @@ html[data-theme="auto"].admin-mobile {
         padding-bottom: 0;
         border-bottom: 0;
         text-align: start;
+    }
+}
+
+@media (min-width: 601px) {
+    html.admin-mobile-filter-sheet .admin-mobile-filter-chrome,
+    html.admin-mobile-filter-sheet .admin-mobile-filter-foot,
+    html.admin-mobile-filter-sheet .admin-mobile-filter-search,
+    html.admin-mobile-filter-sheet .admin-mobile-filter-backdrop {
+        display: none;
+    }
+
+    html.admin-mobile-filter-sheet #changelist-filter .admin-mobile-filter-body {
+        display: contents;
     }
 }
 
