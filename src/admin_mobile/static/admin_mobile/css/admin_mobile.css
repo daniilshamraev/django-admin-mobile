@@ -384,14 +384,21 @@ html[data-theme="light"] .admin-mobile-filter-toggle {
     html.admin-mobile-filters .admin-mobile-filter-toggle:not([hidden]) {
         display: flex;
         align-items: center;
-        justify-content: space-between;
+        justify-content: flex-start;
+        gap: 8px;
+        padding-inline: 16px;
+    }
+
+    html.admin-mobile-filters .admin-mobile-filter-label {
+        margin-inline-end: auto;
     }
 
     html.admin-mobile-filters .admin-mobile-filter-toggle::after {
         content: "";
+        flex: 0 0 auto;
         width: 0.45rem;
         height: 0.45rem;
-        margin-inline-start: 8px;
+        margin-inline-start: 4px;
         border-right: 2px solid var(--body-quiet-color);
         border-bottom: 2px solid var(--body-quiet-color);
         transform: rotate(45deg);
@@ -450,15 +457,15 @@ html.admin-mobile-cards .admin-mobile-select-all {
 
 @media (max-width: 600px) {
     html.admin-mobile #header {
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
         height: auto;
-        padding: 8px 12px;
+        padding: 6px 16px;
     }
 
-    html.admin-mobile #branding,
-    html.admin-mobile #user-tools {
+    html.admin-mobile #branding {
         float: none;
-        width: 100%;
+        width: auto;
+        min-width: 0;
         max-width: 100%;
     }
 
@@ -493,12 +500,12 @@ html.admin-mobile-cards .admin-mobile-select-all {
         padding: 10px 12px;
     }
 
-    /* Django hides both controls below 767px. Put the toggle back. */
+    /* Django hides both controls below 767px. Keep the toggle in the header row. */
     html.admin-mobile #toggle-nav-sidebar {
-        display: flex;
-        position: sticky;
-        top: 0;
-        z-index: 60;
+        display: inline-flex;
+        position: static;
+        top: auto;
+        z-index: 1;
         flex: 0 0 44px;
         width: 44px;
         min-width: 44px;
@@ -509,7 +516,7 @@ html.admin-mobile-cards .admin-mobile-select-all {
         display: block;
         position: fixed;
         z-index: 40;
-        top: 0;
+        top: 56px;
         bottom: 0;
         left: 0;
         width: min(18rem, 86vw);
@@ -582,18 +589,26 @@ html.admin-mobile-cards .admin-mobile-select-all {
     /* Index and app index only. :has(caption) skips changelist and inlines. */
     html.admin-mobile #content-main table:has(caption) tr {
         display: flex;
-        flex-wrap: wrap;
-        gap: 4px 12px;
+        flex-wrap: nowrap;
+        gap: 8px;
         align-items: center;
-        padding: 8px 0;
-        border-bottom: 1px solid var(--hairline-color);
+        width: 100%;
+        padding: 0;
+        border: 0;
+        border-top: 1px solid var(--hairline-color);
     }
 
     html.admin-mobile #content-main table:has(caption) th,
     html.admin-mobile #content-main table:has(caption) td {
         display: block;
         width: auto;
-        padding: 4px 0;
+        padding: 0;
+        border: 0;
+    }
+
+    html.admin-mobile #content-main table:has(caption) td {
+        flex: 0 0 7rem;
+        width: 7rem;
     }
 
     html.admin-mobile #content-main table:has(caption) th a,
@@ -832,7 +847,7 @@ html.admin-mobile-cards .admin-mobile-select-all {
 
     html.admin-mobile .object-tools li,
     html.admin-mobile .object-tools a {
-        width: 100%;
+        width: auto;
     }
 
     html.admin-mobile body.delete-confirmation #content li {

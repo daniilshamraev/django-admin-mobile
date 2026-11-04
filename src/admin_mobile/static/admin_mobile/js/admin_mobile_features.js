@@ -93,21 +93,101 @@
         document.addEventListener("keydown", onKey);
     }
 
+    function iconSvg(paths) {
+        return (
+            '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+            paths +
+            "</svg>"
+        );
+    }
+
+    var TAB_ICONS = {
+        home: iconSvg('<path d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-5v-6H10v6H5a1 1 0 0 1-1-1z"/>'),
+        search: iconSvg('<circle cx="11" cy="11" r="6"/><path d="m20 20-3.5-3.5"/>'),
+        recent: iconSvg('<circle cx="12" cy="12" r="8"/><path d="M12 8v5l3 2"/>'),
+        saved: iconSvg('<path d="m12 3 2.6 5.3L20 9.2l-4 3.9.9 5.6L12 16.8 7.1 18.7 8 13.1 4 9.2l5.4-.9z"/>'),
+        account: iconSvg('<circle cx="12" cy="8" r="3.2"/><path d="M5 19.2c1.4-3 3.8-4.4 7-4.4s5.6 1.4 7 4.4"/>')
+    };
+
+    function fillIconButton(control, iconName, label) {
+        control.innerHTML = TAB_ICONS[iconName] + "<span></span>";
+        var caption = control.querySelector("span");
+        if (caption) {
+            caption.textContent = label;
+        }
+    }
+
     function initHeader() {
         var header = document.getElementById("header");
-        var toggle = document.getElementById("toggle-nav-sidebar");
-        if (header && toggle && mobile()) {
-            header.prepend(toggle);
-        }
-        var tools = document.getElementById("user-tools");
-        if (!tools || !mobile()) {
+        if (!header || !mobile() || header.querySelector(".admin-mobile-user")) {
             return;
         }
+        var toggle = document.getElementById("toggle-nav-sidebar");
+        if (toggle) {
+            header.insertBefore(toggle, header.firstChild);
+        }
+        var tools = document.getElementById("user-tools");
+        if (!tools) {
+            return;
+        }
+        var theme = tools.querySelector(".theme-toggle");
+        var panel = sheet("admin-mobile-sheet admin-mobile-user-sheet");
+        var welcome = document.createElement("p");
+        welcome.className = "admin-mobile-welcome";
+        var welcomeText = [];
         Array.prototype.slice.call(tools.childNodes).forEach(function (node) {
-            if (node.nodeType === 3 && node.textContent.indexOf("/") !== -1) {
-                node.textContent = " ";
+            if (theme && node === theme) {
+                return;
+            }
+            if (node.nodeType === 3 || (node.nodeType === 1 && node.tagName === "STRONG")) {
+                var text = (node.textContent || "").replace(/\s*\/\s*/g, " ").replace(/\s+/g, " ").trim();
+                if (text) {
+                    welcomeText.push(text);
+                }
+                return;
+            }
+            if (node.nodeType === 1) {
+                panel.appendChild(node);
             }
         });
+        if (welcomeText.length) {
+            welcome.textContent = welcomeText.join(" ").replace(/\s+\./g, ".").replace(/\s+/g, " ").trim();
+            panel.insertBefore(welcome, panel.firstChild);
+        }
+        var close = document.createElement("button");
+        close.type = "button";
+        close.className = "admin-mobile-sheet-close";
+        close.textContent = "Close";
+        close.addEventListener("click", function () {
+            panel.hidden = true;
+        });
+        panel.appendChild(close);
+        var menu = document.createElement("button");
+        menu.type = "button";
+        menu.className = "admin-mobile-user";
+        menu.setAttribute("aria-label", "Account");
+        menu.setAttribute("aria-expanded", "false");
+        menu.innerHTML = TAB_ICONS.account;
+        menu.addEventListener("click", function () {
+            panel.hidden = false;
+            menu.setAttribute("aria-expanded", "true");
+            closeOnEscape(panel);
+            close.focus();
+        });
+        tools.classList.add("admin-mobile-user-source");
+        tools.hidden = true;
+        header.appendChild(menu);
+        if (theme) {
+            header.appendChild(theme);
+        }
+    }
+
+    function samePath(href) {
+        try {
+            return new URL(href, location.origin).pathname === location.pathname;
+        } catch (error) {
+            return false;
+        }
     }
 
     function initTabs() {
@@ -117,27 +197,32 @@
         var bar = document.createElement("nav");
         bar.className = "admin-mobile-tabbar";
         bar.setAttribute("aria-label", "Admin");
-        function link(href, text) {
+        function link(href, text, iconName) {
             var anchor = document.createElement("a");
             anchor.href = href;
-            anchor.textContent = text;
+            anchor.className = "admin-mobile-tab";
+            fillIconButton(anchor, iconName, text);
+            if (samePath(href)) {
+                anchor.setAttribute("aria-current", "page");
+            }
             return anchor;
         }
-        function button(text, action) {
-            var control = document.createElement("button");
-            control.type = "button";
-            control.textContent = text;
-            control.addEventListener("click", action);
-            return control;
-        }
-        bar.appendChild(link("/admin/", "Home"));
+        bar.appendChild(link("/admin/", "Home", "home"));
         if (cfg.searchUrl) {
-            bar.appendChild(link(cfg.searchUrl, "Search"));
+            bar.appendChild(link(cfg.searchUrl, "Search", "search"));
         }
         if (cfg.recentUrl) {
-            bar.appendChild(link(cfg.recentUrl, "Recent"));
+            bar.appendChild(link(cfg.recentUrl, "Recent", "recent"));
         }
-        bar.appendChild(button("Saved", openFavorites));
+        var saved = document.createElement("button");
+        saved.type = "button";
+        saved.className = "admin-mobile-tab";
+        fillIconButton(saved, "saved", "Saved");
+        saved.addEventListener("click", function () {
+            saved.setAttribute("aria-pressed", "true");
+            openFavorites();
+        });
+        bar.appendChild(saved);
         document.body.appendChild(bar);
     }
 
@@ -198,6 +283,11 @@
             localStorage.setItem("admin-mobile-favorites", JSON.stringify(items.slice(0, 12)));
             button.textContent = "Saved";
         });
+        var toolbar = document.getElementById("toolbar");
+        if (toolbar) {
+            toolbar.appendChild(button);
+            return;
+        }
         var tools = document.querySelector(".object-tools");
         if (tools) {
             var item = document.createElement("li");
@@ -249,11 +339,29 @@
         var select = actions.querySelector("select");
         var run = actions.querySelector("button, input[type=submit]");
         if (select) {
+            var clone = select.cloneNode(true);
+            clone.removeAttribute("id");
+            clone.addEventListener("change", function () {
+                select.value = clone.value;
+            });
             bar.appendChild(label);
-            bar.appendChild(select);
+            bar.appendChild(clone);
         }
         if (run) {
-            bar.appendChild(run);
+            var runClone = run.cloneNode(true);
+            runClone.type = "button";
+            runClone.addEventListener("click", function () {
+                var chosen = bar.querySelector("select");
+                if (select && chosen) {
+                    select.value = chosen.value;
+                }
+                if (typeof form.requestSubmit === "function") {
+                    form.requestSubmit(run);
+                } else {
+                    run.click();
+                }
+            });
+            bar.appendChild(runClone);
         }
         document.body.appendChild(bar);
         function refresh() {
@@ -743,12 +851,8 @@
         }
         var button = document.createElement("button");
         button.type = "button";
-        button.className = "admin-mobile-sheet-close";
+        button.className = "admin-mobile-formnav";
         button.textContent = "Sections";
-        button.style.position = "fixed";
-        button.style.zIndex = "50";
-        button.style.right = "12px";
-        button.style.bottom = "calc(var(--am-bar) + 12px)";
         button.addEventListener("click", function () {
             var panel = sheet("admin-mobile-navigator");
             panel.hidden = false;
@@ -968,6 +1072,21 @@
         });
     }
 
+    function syncChromeStack() {
+        var height = 0;
+        if (mobile()) {
+            var rows = document.querySelectorAll("#content-main > form .submit-row");
+            var row = rows.length ? rows[rows.length - 1] : null;
+            if (!row) {
+                row = document.querySelector("body.delete-confirmation #content > form");
+            }
+            if (row) {
+                height = Math.ceil(row.getBoundingClientRect().height);
+            }
+        }
+        root.style.setProperty("--am-submit", height + "px");
+    }
+
     function initServiceWorker() {
         if (!cfg.pwa || !cfg.swUrl || !("serviceWorker" in navigator) || !mobile()) {
             return;
@@ -1003,6 +1122,9 @@
         initUndoAndSlide();
         initLightbox();
         initNavigator();
+        syncChromeStack();
+        window.addEventListener("resize", syncChromeStack);
+        window.requestAnimationFrame(syncChromeStack);
         initPickers();
         initCamera();
         initToasts();

@@ -41,8 +41,8 @@ def accent_declarations(
 
     props: dict[str, str] = {}
     if accent:
-        # Interactive colors only. Header and body stay on the active theme.
-        props["--accent"] = accent
+        # Buttons only. --accent also drives the header title, which becomes
+        # unreadable when the accent is a dark hex on --header-bg.
         props["--button-bg"] = accent
         props["--default-button-bg"] = accent
         props["--object-tools-bg"] = accent

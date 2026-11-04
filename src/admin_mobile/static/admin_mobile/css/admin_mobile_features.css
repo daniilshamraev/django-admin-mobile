@@ -74,30 +74,71 @@ html[data-theme="auto"].admin-mobile {
         overflow-x: clip;
     }
 
+    html.admin-mobile {
+        --header-branding-color: var(--header-link-color);
+    }
+
     html.admin-mobile #content {
         padding: var(--am-pad);
+        padding-bottom: calc(var(--am-pad) + var(--am-submit, 0px));
         box-sizing: border-box;
+    }
+
+    html.admin-mobile-tabs,
+    html.admin-mobile-tabs body {
+        scroll-padding-bottom: calc(var(--am-bar) + var(--am-submit, 0px) + 24px + env(safe-area-inset-bottom));
+    }
+
+    html.admin-mobile-tabs #content,
+    html.admin-mobile-tabs.admin-mobile-sticky body:not(.login) #content {
+        padding-bottom: calc(var(--am-bar) + var(--am-submit, 0px) + var(--am-pad) + env(safe-area-inset-bottom));
+    }
+
+    html.admin-mobile-tabs body.change-list #content {
+        padding-bottom: calc(var(--am-bar) + var(--am-tap) + var(--am-pad) + 16px + env(safe-area-inset-bottom));
+    }
+
+    html.admin-mobile-tabs #content input,
+    html.admin-mobile-tabs #content select,
+    html.admin-mobile-tabs #content textarea,
+    html.admin-mobile-tabs #content button,
+    html.admin-mobile-tabs #content a,
+    html.admin-mobile-tabs #content .submit-row {
+        scroll-margin-bottom: calc(var(--am-bar) + var(--am-submit, 0px) + 24px + env(safe-area-inset-bottom));
     }
 
     html.admin-mobile #header {
         display: flex;
         flex-direction: row;
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
         align-items: center;
         gap: var(--am-space);
         height: auto;
-        padding: 12px var(--am-pad);
+        min-height: 56px;
+        padding: 6px var(--am-pad);
     }
 
-    html.admin-mobile #header #toggle-nav-sidebar {
+    html.admin-mobile #header #toggle-nav-sidebar,
+    html.admin-mobile #toggle-nav-sidebar {
         position: static;
         top: auto;
         right: auto;
         bottom: auto;
         left: auto;
+        display: inline-flex;
         flex: 0 0 var(--am-tap);
+        width: var(--am-tap);
+        height: var(--am-tap);
+        min-width: var(--am-tap);
+        min-height: var(--am-tap);
         margin: 0;
+        padding: 0;
+        border: 0;
+        border-radius: var(--am-radius);
+        background: transparent;
+        color: var(--header-link-color);
         box-shadow: none;
+        transform: none;
     }
 
     html.admin-mobile #header #branding,
@@ -114,46 +155,82 @@ html[data-theme="auto"].admin-mobile {
         max-width: 100%;
     }
 
-    html.admin-mobile #site-name a {
+    html.admin-mobile #site-name {
+        margin: 0;
+        font-size: 1.05rem;
+        line-height: 1.2;
+        color: var(--header-branding-color);
+    }
+
+    html.admin-mobile #site-name a:link,
+    html.admin-mobile #site-name a:visited,
+    html.admin-mobile #site-name a:hover,
+    html.admin-mobile #site-name a:focus {
         display: block;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
+        color: var(--header-branding-color);
+        text-decoration: none;
     }
 
-    html.admin-mobile #user-tools {
-        display: flex;
-        flex-wrap: wrap;
+    html.admin-mobile #user-tools.admin-mobile-user-source {
+        display: none;
+    }
+
+    html.admin-mobile #header .admin-mobile-user,
+    html.admin-mobile #header .theme-toggle {
+        display: inline-flex;
         align-items: center;
-        gap: var(--am-space);
-        float: none;
-        flex: 1 1 100%;
-        width: 100%;
+        justify-content: center;
+        flex: 0 0 var(--am-tap);
+        width: var(--am-tap);
+        height: var(--am-tap);
+        min-width: var(--am-tap);
+        min-height: var(--am-tap);
         margin: 0;
+        padding: 0;
+        background: transparent;
+        border: 0;
+        border-radius: var(--am-radius);
+        color: var(--header-link-color);
+    }
+
+    html.admin-mobile #header .theme-toggle svg {
+        width: 22px;
+        height: 22px;
+    }
+
+    html.admin-mobile .admin-mobile-user-sheet a,
+    html.admin-mobile .admin-mobile-user-sheet #logout-form,
+    html.admin-mobile .admin-mobile-user-sheet #logout-form button {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        min-height: var(--am-tap);
+        margin: 0;
+        padding: 0;
+        background: transparent;
+        border: 0;
+        border-bottom: 0;
+        color: var(--body-fg);
+        font-size: 1rem;
+        font-weight: 500;
+        letter-spacing: 0;
+        text-transform: none;
+        text-decoration: none;
         text-align: start;
+    }
+
+    html.admin-mobile .admin-mobile-welcome {
+        margin: 0 0 var(--am-space);
+        color: var(--body-fg);
+        font-weight: 700;
     }
 
     html.admin-mobile #logout-form {
         display: inline-flex;
         margin: 0;
-    }
-
-    html.admin-mobile #user-tools a,
-    html.admin-mobile #logout-form button,
-    html.admin-mobile .theme-toggle {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        min-height: var(--am-tap);
-        margin: 0;
-        padding: 0 var(--am-space);
-        background: transparent;
-        border: 0;
-        color: var(--am-header-ink);
-    }
-
-    html.admin-mobile .theme-toggle {
-        margin-inline-start: auto;
     }
 
     html.admin-mobile .breadcrumbs {
@@ -162,31 +239,6 @@ html[data-theme="auto"].admin-mobile {
         gap: 4px var(--am-space);
         padding: 12px var(--am-pad);
         white-space: normal;
-    }
-
-    html.admin-mobile #toggle-nav-sidebar {
-        position: fixed;
-        z-index: 70;
-        top: auto;
-        left: 12px;
-        bottom: calc(var(--am-bar) + 12px);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: var(--am-tap);
-        height: var(--am-tap);
-        min-width: var(--am-tap);
-        min-height: var(--am-tap);
-        margin: 0;
-        border-radius: 999px;
-        background: var(--am-header);
-        color: var(--am-header-ink);
-        box-shadow: 0 4px 16px var(--am-shadow);
-    }
-
-    html[dir="rtl"].admin-mobile #toggle-nav-sidebar {
-        left: auto;
-        right: 12px;
     }
 
     html.admin-mobile .main,
@@ -200,7 +252,7 @@ html[data-theme="auto"].admin-mobile {
     html.admin-mobile #nav-sidebar {
         position: fixed;
         z-index: 65;
-        top: 0;
+        top: 56px;
         bottom: 0;
         left: 0;
         width: min(18rem, calc(100vw - 24px));
@@ -213,9 +265,18 @@ html[data-theme="auto"].admin-mobile {
         visibility: hidden;
     }
 
-    html.admin-mobile .main.shifted #nav-sidebar {
+    html.admin-mobile .main.shifted #nav-sidebar,
+    html[dir="rtl"].admin-mobile .main.shifted #nav-sidebar {
+        left: 0;
+        right: auto;
+        width: min(18rem, calc(100vw - 24px));
         transform: none;
         visibility: visible;
+    }
+
+    html[dir="rtl"].admin-mobile .main.shifted #nav-sidebar {
+        left: auto;
+        right: 0;
     }
 
     html[dir="rtl"].admin-mobile #nav-sidebar {
@@ -236,14 +297,15 @@ html[data-theme="auto"].admin-mobile {
         background: var(--am-surface);
     }
 
-    html.admin-mobile #content-main table:has(caption) {
+    html.admin-mobile #content-main table:has(caption),
+    html.admin-mobile #content-main table:has(caption) tbody {
         display: block;
         width: 100%;
     }
 
     html.admin-mobile #content-main table:has(caption) caption {
         display: block;
-        padding: 12px var(--am-pad);
+        padding: 12px 0;
         text-align: start;
     }
 
@@ -253,17 +315,24 @@ html[data-theme="auto"].admin-mobile {
 
     html.admin-mobile #content-main table:has(caption) tr {
         display: flex;
+        flex-wrap: nowrap;
         align-items: center;
         gap: var(--am-space);
+        width: 100%;
         min-height: 48px;
-        padding: 0 12px;
+        margin: 0;
+        padding: 0;
+        border: 0;
         border-top: 1px solid var(--am-line);
+        box-sizing: border-box;
     }
 
     html.admin-mobile #content-main table:has(caption) th {
         flex: 1 1 auto;
+        width: auto;
         min-width: 0;
         padding: 0;
+        border: 0;
         text-align: start;
     }
 
@@ -279,20 +348,28 @@ html[data-theme="auto"].admin-mobile {
     }
 
     html.admin-mobile #content-main table:has(caption) td {
-        flex: 0 0 auto;
-        width: auto;
+        flex: 0 0 7rem;
+        width: 7rem;
+        max-width: 7rem;
         padding: 0;
+        border: 0;
+        box-sizing: border-box;
     }
 
     html.admin-mobile #content-main table:has(caption) td a {
         display: inline-flex;
         align-items: center;
+        justify-content: center;
+        width: 100%;
         min-height: var(--am-tap);
-        padding: 0 12px 0 28px;
+        margin: 0;
+        padding: 0 8px 0 22px;
+        border: 0;
         border-radius: var(--am-radius);
         background-color: var(--am-elev);
-        background-position: 8px center;
+        background-position: 6px center;
         background-repeat: no-repeat;
+        box-sizing: border-box;
         text-decoration: none;
         line-height: 1;
         white-space: nowrap;
@@ -309,16 +386,19 @@ html[data-theme="auto"].admin-mobile {
 
     html.admin-mobile .object-tools li {
         display: block;
+        width: auto;
         margin: 0;
     }
 
     html.admin-mobile .object-tools a,
     html.admin-mobile .object-tools a.addlink,
-    html.admin-mobile .object-tools a.viewsitelink {
+    html.admin-mobile .object-tools a.viewsitelink,
+    html.admin-mobile .object-tools a.historylink {
         float: none;
         display: inline-flex;
         align-items: center;
         justify-content: flex-start;
+        width: auto;
         min-height: var(--am-tap);
         margin: 0;
         padding: 0 16px 0 36px;
@@ -326,6 +406,12 @@ html[data-theme="auto"].admin-mobile {
         line-height: 1;
         background-position: 12px center;
         background-repeat: no-repeat;
+    }
+
+    html.admin-mobile .object-tools a.historylink {
+        background-color: var(--darkened-bg);
+        color: var(--body-fg);
+        border: 1px solid var(--border-color);
     }
 
     html.admin-mobile-cards .admin-mobile-sort {
@@ -337,8 +423,7 @@ html[data-theme="auto"].admin-mobile {
     }
 
     html.admin-mobile-cards .admin-mobile-sort span {
-        color: var(--am-muted);
-        font-weight: 600;
+        display: none;
     }
 
     html.admin-mobile-cards .admin-mobile-sort select,
@@ -359,6 +444,48 @@ html[data-theme="auto"].admin-mobile {
     html.admin-mobile #changelist .actions,
     html.admin-mobile .toplinks {
         margin-bottom: var(--am-pad);
+    }
+
+    html.admin-mobile #toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: var(--am-space);
+    }
+
+    html.admin-mobile #toolbar form input[type="submit"] {
+        appearance: none;
+        flex: 0 0 auto;
+        min-height: var(--am-tap);
+        margin: 0;
+        padding: 0 16px;
+        border: 0;
+        border-radius: var(--am-radius);
+        background: var(--button-bg);
+        box-shadow: none;
+        color: var(--button-fg);
+        font-size: 1rem;
+    }
+
+    html.admin-mobile #changelist .actions label {
+        display: flex;
+        align-items: center;
+        gap: var(--am-space);
+        flex: 1 1 12rem;
+        min-width: 0;
+        margin: 0;
+    }
+
+    html.admin-mobile .admin-mobile-save-model {
+        flex: 0 0 auto;
+        width: auto;
+        min-height: var(--am-tap);
+        margin: 0;
+        padding: 0 16px;
+        border: 1px solid var(--border-color);
+        border-radius: var(--am-radius);
+        background: var(--darkened-bg);
+        color: var(--body-fg);
     }
 
     html.admin-mobile #toolbar form,
@@ -387,15 +514,34 @@ html[data-theme="auto"].admin-mobile {
 
     html.admin-mobile .toplinks {
         display: flex;
-        flex-wrap: wrap;
+        flex-flow: row nowrap;
+        align-items: center;
         gap: var(--am-space);
+        overflow-x: auto;
+        padding: 0;
+    }
+
+    html.admin-mobile .toplinks span,
+    html.admin-mobile .toplinks #date-hierarchy-label {
+        flex: 0 0 auto;
+        color: var(--body-quiet-color);
+        font-weight: 600;
+        white-space: nowrap;
     }
 
     html.admin-mobile .toplinks a {
         display: inline-flex;
         align-items: center;
+        flex: 0 0 auto;
         min-height: var(--am-tap);
-        padding: 0 8px;
+        margin: 0;
+        padding: 0 14px;
+        border: 1px solid var(--border-color);
+        border-radius: 999px;
+        background: var(--darkened-bg);
+        color: var(--body-fg);
+        text-decoration: none;
+        white-space: nowrap;
     }
 
     html.admin-mobile-cards #result_list tbody td,
@@ -470,13 +616,35 @@ html[data-theme="auto"].admin-mobile {
         display: inline-flex;
         align-items: center;
         justify-content: center;
+        flex: 0 0 auto;
         min-width: 1.5rem;
         min-height: 1.5rem;
-        margin-inline-start: var(--am-space);
+        margin: 0;
         padding: 0 6px;
+        border: 1px solid color-mix(in srgb, var(--button-fg) 45%, var(--button-bg));
         border-radius: 999px;
-        background: var(--am-accent);
-        color: var(--am-on-accent);
+        background: var(--button-bg);
+        color: var(--button-fg);
+    }
+
+    html.admin-mobile body.change-list .object-tools {
+        margin: 0;
+        min-height: 0;
+    }
+
+    html.admin-mobile body.change-list .object-tools a.addlink {
+        position: fixed;
+        z-index: 52;
+        right: var(--am-pad);
+        bottom: calc(var(--am-bar) + var(--am-pad) + env(safe-area-inset-bottom));
+        box-shadow: 0 4px 16px var(--am-shadow);
+        background-color: var(--button-bg);
+        color: var(--button-fg);
+    }
+
+    html[dir="rtl"].admin-mobile body.change-list .object-tools a.addlink {
+        right: auto;
+        left: var(--am-pad);
     }
 
     html.admin-mobile #content .form-row input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="submit"]):not([type="button"]),
@@ -529,13 +697,17 @@ html[data-theme="auto"].admin-mobile {
     }
 
     html.admin-mobile .related-widget-wrapper > a,
+    html.admin-mobile .related-widget-wrapper a.related-widget-wrapper-link,
     html.admin-mobile a.related-lookup {
         display: inline-flex;
         align-items: center;
         justify-content: center;
+        flex: 0 0 var(--am-tap);
         width: var(--am-tap);
+        height: var(--am-tap);
         min-width: var(--am-tap);
         min-height: var(--am-tap);
+        margin: 0;
     }
 
     html.admin-mobile-inlines .inline-group .tabular tr.form-row:not(.empty-form) {
@@ -571,8 +743,36 @@ html[data-theme="auto"].admin-mobile {
         border-top: 1px solid var(--am-line);
     }
 
-    html.admin-mobile-tabs.admin-mobile-sticky form .submit-row:last-of-type {
-        bottom: var(--am-bar);
+    html.admin-mobile-tabs.admin-mobile-sticky #content-main > form .submit-row,
+    html.admin-mobile-tabs body.delete-confirmation #content form {
+        position: fixed;
+        z-index: 45;
+        left: 0;
+        right: 0;
+        bottom: calc(var(--am-bar) + env(safe-area-inset-bottom));
+        width: auto;
+        margin: 0;
+        padding: 12px var(--am-pad);
+        box-sizing: border-box;
+        background: var(--body-bg);
+        border-top: 1px solid var(--hairline-color);
+    }
+
+    html.admin-mobile-tabs body.delete-confirmation #content form {
+        display: flex;
+        flex-direction: column;
+        gap: var(--am-space);
+    }
+
+    html.admin-mobile-tabs body.delete-confirmation #content form input[type="submit"],
+    html.admin-mobile-tabs body.delete-confirmation #content form a.button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        min-height: var(--am-tap);
+        margin: 0;
+        box-sizing: border-box;
     }
 
     html.admin-mobile .submit-row input,
@@ -593,7 +793,7 @@ html[data-theme="auto"].admin-mobile {
     }
 
     html.admin-mobile-tabs body {
-        padding-bottom: calc(var(--am-bar) + env(safe-area-inset-bottom));
+        padding-bottom: 0;
     }
 
     html.admin-mobile .admin-mobile-tabbar {
@@ -613,18 +813,62 @@ html[data-theme="auto"].admin-mobile {
     }
 
     html.admin-mobile .admin-mobile-tabbar a,
+    html.admin-mobile .admin-mobile-tabbar a:link,
+    html.admin-mobile .admin-mobile-tabbar a:visited,
+    html.admin-mobile .admin-mobile-tabbar a:hover,
+    html.admin-mobile .admin-mobile-tabbar a:focus,
     html.admin-mobile .admin-mobile-tabbar button {
         flex: 1 1 0;
         display: inline-flex;
+        flex-direction: column;
         align-items: center;
         justify-content: center;
+        gap: 2px;
+        min-width: 0;
         min-height: var(--am-tap);
-        padding: 0 4px;
+        margin: 6px 2px;
+        padding: 4px 2px;
         background: transparent;
         border: 0;
-        color: var(--am-header-ink);
+        border-radius: var(--am-radius);
+        color: var(--header-link-color);
         font: inherit;
+        font-size: 0.6875rem;
+        line-height: 1.1;
+        text-align: center;
         text-decoration: none;
+    }
+
+    html.admin-mobile .admin-mobile-tabbar svg {
+        width: 22px;
+        height: 22px;
+        flex: 0 0 22px;
+    }
+
+    html.admin-mobile .admin-mobile-tabbar [aria-current="page"],
+    html.admin-mobile .admin-mobile-tabbar [aria-pressed="true"] {
+        background: color-mix(in srgb, var(--header-link-color) 18%, transparent);
+        color: var(--header-link-color);
+        font-weight: 700;
+    }
+
+    html.admin-mobile .admin-mobile-formnav {
+        position: fixed;
+        z-index: 55;
+        right: var(--am-pad);
+        bottom: calc(var(--am-bar) + var(--am-submit, 0px) + 12px + env(safe-area-inset-bottom));
+        min-height: var(--am-tap);
+        padding: 0 16px;
+        border: 0;
+        border-radius: 999px;
+        background: var(--button-bg);
+        color: var(--button-fg);
+        box-shadow: 0 4px 16px var(--am-shadow);
+    }
+
+    html[dir="rtl"].admin-mobile .admin-mobile-formnav {
+        right: auto;
+        left: var(--am-pad);
     }
 
     html.admin-mobile .admin-mobile-sheet,

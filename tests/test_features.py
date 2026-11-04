@@ -26,6 +26,8 @@ def test_accent_style_targets_both_themes() -> None:
     assert "html[data-theme='dark']" in css
     assert "prefers-color-scheme: dark" in css
     assert "--button-bg:#205067" in css
+    assert "--accent:" not in css
+    assert "--header-bg" not in css
     assert "--body-bg" not in css
 
 

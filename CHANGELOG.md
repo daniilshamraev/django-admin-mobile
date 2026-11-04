@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.2.1
+
+- Header is one row: sidebar icon, ellipsized title in `--header-branding-color`, account sheet, theme toggle. `ACCENT` no longer sets `--accent`, so the title stays readable on `--header-bg`.
+- Index rows are full-width with one border. Add, Change, and View share a fixed width.
+- Bottom tabs use an icon and a label, with an active state and no underline. The submit bar sits above the tab bar. The section button sits above both.
+- Changelist: search submit uses button colors, the action select stays in place, date hierarchy is a chip row, “Save this list” is a secondary toolbar button, and “Sort by” is labeled once.
+- Related-object icons are 44px and left-aligned. History is a compact secondary button.
+- Changelist: the filter count sits on the trailing side of the Filter control, with padding from the edges, and uses button colors in dark mode. Add stays fixed at the bottom-right, above the tab bar.
+
 ## 0.2.0
 
 - Phone layout pass: compact header, aligned index rows, full-width fields, centered object-tool buttons, a Sort by control, and an 8px spacing scale.

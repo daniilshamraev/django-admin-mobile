@@ -101,15 +101,14 @@
         if (!links.length) {
             return;
         }
-        var bar = document.createElement("label");
+        var bar = document.createElement("div");
         bar.className = "admin-mobile-sort";
-        var caption = document.createElement("span");
-        caption.textContent = root.getAttribute("data-admin-mobile-sort-label") || "Sort by";
+        var sortLabel = root.getAttribute("data-admin-mobile-sort-label") || "Sort by";
         var select = document.createElement("select");
-        select.setAttribute("aria-label", caption.textContent || "Sort by");
+        select.setAttribute("aria-label", sortLabel);
         var placeholder = document.createElement("option");
         placeholder.value = "";
-        placeholder.textContent = caption.textContent || "Sort by";
+        placeholder.textContent = sortLabel;
         select.appendChild(placeholder);
         var seen = {};
         Array.prototype.forEach.call(links, function (link) {
@@ -132,7 +131,6 @@
                 window.location.assign(select.value);
             }
         });
-        bar.appendChild(caption);
         bar.appendChild(select);
         table.insertAdjacentElement("beforebegin", bar);
     }
@@ -219,7 +217,10 @@
         button.id = "admin-mobile-filter-toggle";
         button.setAttribute("aria-controls", "changelist-filter");
         var heading = sidebar.querySelector("h2, h3, summary");
-        button.textContent = heading ? cleanText(heading.textContent) || filtersLabel() : filtersLabel();
+        var label = document.createElement("span");
+        label.className = "admin-mobile-filter-label";
+        label.textContent = heading ? cleanText(heading.textContent) || filtersLabel() : filtersLabel();
+        button.appendChild(label);
         sidebar.insertAdjacentElement("beforebegin", button);
 
         var media = window.matchMedia(MOBILE_MQ);

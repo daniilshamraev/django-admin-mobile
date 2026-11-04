@@ -94,7 +94,7 @@ ADMIN_MOBILE = {
 | `UNDO_DELETE` | `False` | After you confirm a single-object delete, wait `UNDO_SECONDS` (5–10, default 8) before the real POST. The toast is `Удалено — Отменить`. Leaving the page cancels it. The row is not deleted on the server until that POST. Risky: the label says deleted while the row still exists. |
 | `SWIPE_CONFIRM` | `True` | Slide control for the delete confirmation page and for actions listed in `SWIPE_CONFIRM_ACTIONS` (default `delete_selected`). |
 | `DOUBLE_SUBMIT_GUARD` | `True` | Disable submit buttons after the first submit. `pageshow` from the back-forward cache turns them back on. |
-| `ACCENT` | unset | Hex color (`#rgb` or `#rrggbb`) mapped to `--accent`, `--button-bg`, `--default-button-bg`, and `--object-tools-bg` for both `data-theme` values and `prefers-color-scheme`. |
+| `ACCENT` | unset | Hex color (`#rgb` or `#rrggbb`) mapped to `--button-bg`, `--default-button-bg`, and `--object-tools-bg` for both `data-theme` values and `prefers-color-scheme`. It does not set `--accent`, because that variable is also the header title color. |
 | `PALETTE` | unset | Optional map of allow-listed admin variable names (`primary`, `header-bg`, `link-fg`, …) to hex colors. |
 | `READONLY_MODELS` | `[]` | `app.model` labels that lose add/change/delete when the `admin_mobile_viewport=mobile` cookie is set. |
 
@@ -167,9 +167,9 @@ uv run tox
 
 ## Publishing
 
-0.1.0 is already on PyPI. This tree is 0.2.0 and is not published from here.
+0.1.0 is already on PyPI. This tree is 0.2.1 and is not published from here.
 
-1. Tag `0.2.0` when you want a release.
+1. Tag `0.2.1` when you want a release.
 2. Build: `uv build`.
 3. Publish: `uv publish` with a PyPI token.
 

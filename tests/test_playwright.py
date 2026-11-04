@@ -236,7 +236,7 @@ def test_admin_screenshots_at_phone_width(
     sticky = page.locator("form .submit-row").last.evaluate(
         "element => getComputedStyle(element).position"
     )
-    assert sticky == "sticky"
+    assert sticky == "fixed"
 
     title_inputs = page.locator(
         ".inline-group .tabular tr.form-row:not(.empty-form) input[name$='-title']"
@@ -251,14 +251,11 @@ def test_admin_screenshots_at_phone_width(
     page.locator(".inline-deletelink").last.click()
     expect(title_inputs).to_have_count(before_add)
 
-    _pair(page, "change-form-375.png", full=True)
-    page.set_viewport_size({"width": 414, "height": 896})
-    _pair(page, "change-form-414.png", full=True)
-    page.set_viewport_size({"width": 375, "height": 812})
+    _pair(page, "change-form-375.png")
 
 
-def _shot(page: Page, name: str, *, full: bool = False) -> None:
-    page.screenshot(path=str(SCREENSHOTS / name), full_page=full)
+def _shot(page: Page, name: str) -> None:
+    page.screenshot(path=str(SCREENSHOTS / name), full_page=False)
 
 
 def _theme(page: Page, name: str) -> None:
@@ -269,13 +266,13 @@ def _theme(page: Page, name: str) -> None:
     )
 
 
-def _pair(page: Page, name: str, *, full: bool = False) -> None:
-    _theme(page, "light")
-    _shot(page, name, full=full)
-    _theme(page, "dark")
+def _pair(page: Page, name: str) -> None:
     stem, _, ext = name.rpartition(".")
+    _theme(page, "light")
+    _shot(page, name)
+    _theme(page, "dark")
     if not stem.endswith("-dark"):
-        _shot(page, f"{stem}-dark.{ext}", full=full)
+        _shot(page, f"{stem}-dark.{ext}")
     _theme(page, "light")
 
 
@@ -295,12 +292,12 @@ def test_builtin_admin_surfaces(
 
     page.goto(f"{base_url}/admin/")
     expect(page.locator("#content-main")).to_be_visible()
-    _pair(page, "index-375.png", full=True)
+    _pair(page, "index-375.png")
     _pair(page, "tabs-375.png")
 
     page.goto(f"{base_url}/admin/library/")
     expect(page.get_by_role("link", name="Books")).to_be_visible()
-    _pair(page, "app-index-375.png", full=True)
+    _pair(page, "app-index-375.png")
 
     page.goto(f"{base_url}/admin/password_change/")
     expect(page.locator("#id_old_password")).to_be_visible()
@@ -320,7 +317,7 @@ def test_builtin_admin_surfaces(
 
     page.goto(f"{base_url}{catalog['revisions']}")
     expect(page.locator("#result_list input[name$='-note']").first).to_be_visible()
-    _pair(page, "changelist-editable-375.png", full=True)
+    _pair(page, "changelist-editable-375.png")
 
     page.goto(f"{base_url}{catalog['edition']}")
     expect(page.locator("input[name='series']")).to_be_visible()
@@ -328,7 +325,7 @@ def test_builtin_admin_surfaces(
     expect(page.get_by_text("Currently:").first).to_be_visible()
     expect(page.locator(".inline-group[data-inline-type='stacked']")).to_be_visible()
     expect(page.locator(".readonly").first).to_be_visible()
-    _pair(page, "edition-375.png", full=True)
+    _pair(page, "edition-375.png")
     _pair(page, "camera-375.png")
 
     with page.expect_popup() as popup_info:
@@ -336,10 +333,7 @@ def test_builtin_admin_surfaces(
     popup = popup_info.value
     popup.set_viewport_size({"width": 375, "height": 812})
     expect(popup.locator("input[type='text']").first).to_be_visible()
-    popup.screenshot(path=str(SCREENSHOTS / "popup-375.png"), full_page=True)
-    popup.emulate_media(color_scheme="dark")
-    popup.evaluate("document.documentElement.setAttribute('data-theme', 'dark')")
-    popup.screenshot(path=str(SCREENSHOTS / "popup-375-dark.png"), full_page=True)
+    _pair(popup, "popup-375.png")
     popup.close()
 
     page.goto(f"{base_url}{catalog['edition_add']}")
@@ -347,7 +341,7 @@ def test_builtin_admin_surfaces(
     page.locator("input[name$='-page']").first.fill("4")
     page.locator("input[name='_save']").click()
     expect(page.locator(".errornote, .errorlist").first).to_be_visible()
-    _pair(page, "inline-errors-375.png", full=True)
+    _pair(page, "inline-errors-375.png")
 
     page.goto(f"{base_url}{catalog['history']}")
     expect(
@@ -356,11 +350,11 @@ def test_builtin_admin_surfaces(
         "data-label",
         "Date/time",
     )
-    _pair(page, "history-375.png", full=True)
+    _pair(page, "history-375.png")
 
     page.goto(f"{base_url}{catalog['delete']}")
     expect(page.get_by_text("Note G")).to_be_visible()
-    _pair(page, "delete-confirm-375.png", full=True)
+    _pair(page, "delete-confirm-375.png")
     page.locator("input[type='submit']").click()
     expect(page.locator(".admin-mobile-slide")).to_be_visible()
     _pair(page, "slide-confirm-375.png")
@@ -382,10 +376,10 @@ def test_builtin_admin_surfaces(
 
     page.goto(f"{base_url}/admin/doc/")
     expect(page.locator("#content")).to_be_visible()
-    _pair(page, "admindocs-375.png", full=True)
+    _pair(page, "admindocs-375.png")
     page.goto(f"{base_url}/admin/doc/models/library.book/")
     expect(page.locator("table.model")).to_be_visible()
-    _pair(page, "admindocs-model-375.png", full=True)
+    _pair(page, "admindocs-model-375.png")
 
     page.goto(f"{base_url}{catalog['change']}")
     page.locator("input[name='_save']").click()
@@ -395,9 +389,9 @@ def test_builtin_admin_surfaces(
 
     page.goto(f"{base_url}{catalog['search']}")
     expect(page.locator("#admin-mobile-q")).to_be_visible()
-    _pair(page, "search-375.png", full=True)
+    _pair(page, "search-375.png")
     page.goto(f"{base_url}{catalog['recent']}")
-    _pair(page, "recent-375.png", full=True)
+    _pair(page, "recent-375.png")
 
     page.goto(f"{base_url}{catalog['list']}")
     _pair(page, "pull-375.png")
@@ -434,7 +428,7 @@ def test_builtin_admin_surfaces(
 
     page.goto(f"{base_url}{catalog['tag']}")
     expect(page.locator("input[name='_save']")).to_have_count(0)
-    _pair(page, "readonly-375.png", full=True)
+    _pair(page, "readonly-375.png")
 
     page.goto(f"{base_url}{catalog['edition']}")
     thumb = page.locator(".readonly .admin-mobile-thumb")
@@ -443,13 +437,6 @@ def test_builtin_admin_surfaces(
         expect(page.locator(".admin-mobile-lightbox-dialog")).to_be_visible()
         _pair(page, "lightbox-375.png")
         page.locator(".admin-mobile-lightbox-close").click()
-
-    page.set_viewport_size({"width": 414, "height": 896})
-    page.goto(f"{base_url}{catalog['list']}")
-    _pair(page, "changelist-414.png")
-    page.goto(f"{base_url}/admin/")
-    _pair(page, "index-414.png", full=True)
-    page.set_viewport_size({"width": 375, "height": 812})
 
     page.goto(f"{base_url}{catalog['list']}")
     page.evaluate("document.documentElement.setAttribute('dir', 'rtl')")
@@ -461,6 +448,7 @@ def test_builtin_admin_surfaces(
     )
     _pair(page, "rtl-changelist-375.png")
 
+    page.get_by_role("button", name="Account").click()
     page.locator("#logout-form button").click()
     expect(page.get_by_text("Logged out")).to_be_visible()
     _pair(page, "logged-out-375.png")
