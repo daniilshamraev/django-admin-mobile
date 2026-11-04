@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 from datetime import date, datetime, time
 from decimal import Decimal
 from pathlib import Path
@@ -240,6 +241,38 @@ def test_admin_screenshots_at_phone_width(
             "input[type='search'], input.range-filter, input[type='date']"
         ).first
         expect(date_input).to_be_visible()
+    page.locator("#changelist-filter").get_by_role(
+        "link", name=re.compile(r"^Published")
+    ).click()
+    expect(page.locator("#changelist-filter")).to_be_hidden()
+    page.locator("#admin-mobile-filter-toggle").click()
+    selected = page.locator("#changelist-filter li.selected").filter(
+        has_text="Published"
+    )
+    expect(selected).to_be_visible()
+    _theme(page, "light")
+    light_scrim = page.locator(".admin-mobile-filter-backdrop").evaluate(
+        "element => getComputedStyle(element).backgroundColor"
+    )
+    assert _scrim_is_dark(light_scrim, 0.35)
+    _theme(page, "dark")
+    dark_scrim = page.locator(".admin-mobile-filter-backdrop").evaluate(
+        "element => getComputedStyle(element).backgroundColor"
+    )
+    assert _scrim_is_dark(dark_scrim, 0.5)
+    colors = selected.locator("a").evaluate(
+        """element => {
+          const row = getComputedStyle(element);
+          const mark = getComputedStyle(element, "::before");
+          return {
+            bg: row.backgroundColor,
+            fg: row.color,
+            mark: mark.borderRightColor,
+          };
+        }"""
+    )
+    assert _contrast(colors["fg"], colors["bg"]) >= 4.5
+    assert _contrast(colors["mark"], colors["bg"]) >= 3
     _pair(page, "filters-375.png")
     page.locator(".admin-mobile-filter-apply").click()
     expect(sheet).to_be_hidden()
@@ -285,6 +318,19 @@ def test_admin_screenshots_at_phone_width(
     page.locator(".inline-deletelink").last.click()
     expect(title_inputs).to_have_count(before_add)
 
+    page.evaluate(
+        """() => {
+          window.scrollTo(0, 0);
+          document.documentElement.scrollTop = 0;
+          document.body.scrollTop = 0;
+          const content = document.getElementById("content");
+          if (content) {
+            content.scrollTop = 0;
+          }
+        }"""
+    )
+    expect(page.locator("#id_title")).to_be_in_viewport()
+    expect(page.locator("form .submit-row").last).to_be_in_viewport()
     _pair(page, "change-form-375.png")
 
     page.goto(f"{base_url}{catalog['list']}")
@@ -317,6 +363,49 @@ def test_admin_screenshots_at_phone_width(
         }"""
     )
     _pair(page, "stock-changelist-375.png")
+
+
+def _channel(value: float) -> float:
+    scaled = value / 255
+    if scaled <= 0.04045:
+        return scaled / 12.92
+    return ((scaled + 0.055) / 1.055) ** 2.4
+
+
+def _rgba(css: str) -> tuple[float, float, float, float]:
+    nums = [float(part) for part in re.findall(r"[\d.]+", css)]
+    if len(nums) == 3:
+        nums.append(1.0)
+    red, green, blue, alpha = nums[:4]
+    # Chromium reports color-mix() as color(srgb) with 0-1 components.
+    if "color(" in css and max(red, green, blue) <= 1:
+        red *= 255
+        green *= 255
+        blue *= 255
+    return red, green, blue, alpha
+
+
+def _luminance(css: str) -> float:
+    red, green, blue, _alpha = _rgba(css)
+    return (
+        0.2126 * _channel(red) + 0.7152 * _channel(green) + 0.0722 * _channel(blue)
+    )
+
+
+def _contrast(foreground: str, background: str) -> float:
+    lighter = max(_luminance(foreground), _luminance(background))
+    darker = min(_luminance(foreground), _luminance(background))
+    return (lighter + 0.05) / (darker + 0.05)
+
+
+def _scrim_is_dark(css: str, alpha: float) -> bool:
+    red, green, blue, found = _rgba(css)
+    return (
+        red <= 16
+        and green <= 16
+        and blue <= 16
+        and abs(found - alpha) < 0.02
+    )
 
 
 def _shot(page: Page, name: str) -> None:

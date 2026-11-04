@@ -2,7 +2,7 @@
 
 ## 0.2.7
 
-- The phone filter panel is a bottom sheet: dimmed backdrop, 16px top corners, grab handle, sticky Filters / Reset / Close header, chevrons, 44px options with an accent check and right-aligned counts, and a sticky Show results button.
+- The phone filter panel is a bottom sheet: dimmed backdrop, 16px top corners, grab handle, sticky Filters / Reset / Close header, chevrons, 44px options with an accent check and right-aligned counts, and a sticky Show results button. The scrim darkens the page in light and dark. A selected row keeps a visible accent tint and check in dark mode.
 - Long filter lists get a search field. Date and range inputs stay in the sheet. With JavaScript off, the filters stay inline.
 
 ## 0.2.6

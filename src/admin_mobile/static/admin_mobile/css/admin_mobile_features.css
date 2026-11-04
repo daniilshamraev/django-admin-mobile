@@ -842,7 +842,18 @@ html[data-theme="auto"].admin-mobile {
         position: fixed;
         inset: 0;
         z-index: 79;
-        background: color-mix(in srgb, var(--body-fg) 45%, transparent);
+        /* A black scrim. body-fg is light in dark mode and would wash the page. */
+        background: color-mix(in srgb, black 35%, transparent);
+    }
+
+    html[data-theme="dark"].admin-mobile-filter-sheet .admin-mobile-filter-backdrop {
+        background: color-mix(in srgb, black 50%, transparent);
+    }
+
+    @media (prefers-color-scheme: dark) {
+        html[data-theme="auto"].admin-mobile-filter-sheet .admin-mobile-filter-backdrop {
+            background: color-mix(in srgb, black 50%, transparent);
+        }
     }
 
     html.admin-mobile-filter-sheet .admin-mobile-filter-backdrop[hidden] {
@@ -1073,12 +1084,34 @@ html[data-theme="auto"].admin-mobile {
     html.admin-mobile-filter-sheet #changelist-filter li.selected a::before {
         content: "";
         flex: 0 0 auto;
-        width: 0.35rem;
-        height: 0.65rem;
+        width: 0.4rem;
+        height: 0.7rem;
         margin-top: -2px;
         border-right: 2px solid var(--button-bg);
         border-bottom: 2px solid var(--button-bg);
         transform: rotate(45deg);
+    }
+
+    html[data-theme="dark"].admin-mobile-filter-sheet #changelist-filter li.selected a {
+        background: color-mix(in srgb, var(--button-bg) 46%, var(--body-bg));
+        color: var(--body-fg);
+    }
+
+    html[data-theme="dark"].admin-mobile-filter-sheet #changelist-filter li.selected a::before {
+        border-right: 3px solid color-mix(in srgb, var(--button-fg) 58%, var(--button-bg));
+        border-bottom: 3px solid color-mix(in srgb, var(--button-fg) 58%, var(--button-bg));
+    }
+
+    @media (prefers-color-scheme: dark) {
+        html[data-theme="auto"].admin-mobile-filter-sheet #changelist-filter li.selected a {
+            background: color-mix(in srgb, var(--button-bg) 46%, var(--body-bg));
+            color: var(--body-fg);
+        }
+
+        html[data-theme="auto"].admin-mobile-filter-sheet #changelist-filter li.selected a::before {
+            border-right: 3px solid color-mix(in srgb, var(--button-fg) 58%, var(--button-bg));
+            border-bottom: 3px solid color-mix(in srgb, var(--button-fg) 58%, var(--button-bg));
+        }
     }
 
     html.admin-mobile-filter-sheet #changelist-filter .admin-mobile-filter-choice {
