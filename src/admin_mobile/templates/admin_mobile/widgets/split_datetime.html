@@ -1,0 +1,13 @@
+<div class="datetime admin-mobile-split">
+  <label class="admin-mobile-sublabel">
+    {{ date_label }}
+    {% with widget=widget.subwidgets.0 %}{% include widget.template_name %}{% endwith %}
+  </label>
+  <label class="admin-mobile-sublabel">
+    {{ time_label }}
+    {% with widget=widget.subwidgets.1 %}{% include widget.template_name %}{% endwith %}
+  </label>
+  {% if timezone_name %}
+    <p class="help timezonewarning">Times use {{ timezone_name }}.</p>
+  {% endif %}
+</div>

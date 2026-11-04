@@ -1,0 +1,86 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "django-admin-mobile"
+dynamic = ["version"]
+description = "Make the native Django admin usable on phones without replacing its look."
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+requires-python = ">=3.10"
+authors = [{ name = "Daniil Shamraev" }]
+keywords = ["django", "admin", "mobile", "responsive"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Web Environment",
+    "Framework :: Django",
+    "Framework :: Django :: 4.2",
+    "Framework :: Django :: 5.2",
+    "Framework :: Django :: 6.0",
+    "Framework :: Django :: 6.1",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: JavaScript",
+    "Topic :: Internet :: WWW/HTTP",
+]
+dependencies = ["Django>=4.2"]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.3",
+    "pytest-django>=4.9",
+    "pytest-playwright>=0.6",
+    "playwright>=1.49",
+    "ruff>=0.8",
+    "tox>=4.23",
+    "docutils>=0.20",
+]
+
+[tool.hatch.version]
+path = "src/admin_mobile/__init__.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/admin_mobile"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "src/admin_mobile",
+    "tests",
+    "example",
+    "docs",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md",
+    "CONTRIBUTING.md",
+    "tox.ini",
+    "pyproject.toml",
+]
+
+[tool.ruff]
+target-version = "py310"
+line-length = 88
+src = ["src", "tests", "example"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "RUF"]
+ignore = ["RUF012"]
+
+[tool.ruff.lint.per-file-ignores]
+"**/migrations/**" = ["E501"]
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "tests.settings"
+pythonpath = [".", "src", "example"]
+testpaths = ["tests"]
+addopts = "-q --tb=short"
+markers = [
+    "playwright: browser checks and 375px screenshots",
+]

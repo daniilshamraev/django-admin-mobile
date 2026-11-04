@@ -1,0 +1,13 @@
+{% extends "admin/base.html" %}
+{% load admin_mobile %}
+
+{# Same template name on purpose: Django skips this origin and extends the next admin/base.html. #}
+{% block extrastyle %}
+{{ block.super }}
+{% admin_mobile_assets "style" %}
+{% endblock %}
+
+{% block extrahead %}
+{{ block.super }}
+{% admin_mobile_assets "script" %}
+{% endblock %}

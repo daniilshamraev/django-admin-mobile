@@ -1,0 +1,885 @@
+/*
+ * Phone layout for the native Django admin.
+ *
+ * Selectors start with html.admin-mobile-* so they beat admin/css/responsive.css,
+ * which is linked after extrahead. Colors come only from admin CSS variables,
+ * which already follow html[data-theme] and prefers-color-scheme.
+ */
+
+html[data-theme="light"].admin-mobile,
+html[data-theme="dark"].admin-mobile,
+html[data-theme="auto"].admin-mobile {
+    color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+    html[data-theme="auto"].admin-mobile {
+        color-scheme: dark;
+    }
+}
+
+@media (prefers-color-scheme: light) {
+    html[data-theme="auto"].admin-mobile {
+        color-scheme: light;
+    }
+}
+
+html.admin-mobile .admin-mobile-split {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-width: 100%;
+}
+
+html.admin-mobile .admin-mobile-sublabel {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+    width: 100%;
+    font-weight: 600;
+    color: var(--body-quiet-color);
+}
+
+html.admin-mobile .admin-mobile-native {
+    font-weight: 400;
+    color: var(--body-fg);
+    background: var(--body-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 6px 8px;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+/* Changelist cards at phone width. Medium widths keep the table and scroll. */
+@media (max-width: 600px) {
+    html.admin-mobile-cards #changelist .results {
+        overflow: visible;
+    }
+
+    html.admin-mobile-cards #result_list {
+        display: block;
+        width: 100%;
+        min-width: 0;
+    }
+
+    html.admin-mobile-cards #result_list thead {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+    }
+
+    html.admin-mobile-cards #result_list tbody {
+        display: block;
+    }
+
+    html.admin-mobile-cards #result_list tbody tr {
+        display: block;
+        width: auto;
+        margin: 0 0 12px;
+        padding: 4px 12px;
+        border: 1px solid var(--hairline-color);
+        border-radius: 4px;
+        background: var(--body-bg);
+    }
+
+    html.admin-mobile-cards #result_list tbody tr.selected {
+        background: var(--selected-bg);
+    }
+
+    html.admin-mobile-cards #result_list tbody td,
+    html.admin-mobile-cards #result_list tbody th {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        width: auto;
+        min-height: 44px;
+        padding: 6px 0;
+        border: 0;
+        border-bottom: 1px solid var(--hairline-color);
+        background: transparent;
+        text-align: end;
+        white-space: normal;
+        font-size: 0.875rem;
+    }
+
+    html.admin-mobile-cards #result_list tbody td:last-child,
+    html.admin-mobile-cards #result_list tbody th:last-child {
+        border-bottom: 0;
+    }
+
+    html.admin-mobile-cards #result_list tbody td::before,
+    html.admin-mobile-cards #result_list tbody th::before {
+        content: attr(data-label);
+        flex: 0 0 42%;
+        max-width: 46%;
+        font-weight: 600;
+        text-align: start;
+        color: var(--body-quiet-color);
+    }
+
+    html.admin-mobile-cards #result_list tbody td:not([data-label])::before,
+    html.admin-mobile-cards #result_list tbody th:not([data-label])::before {
+        content: none;
+    }
+
+    html.admin-mobile-cards #result_list tbody a {
+        display: inline-flex;
+        align-items: center;
+        min-height: 44px;
+        word-break: break-word;
+    }
+
+    html.admin-mobile-cards #result_list .action-checkbox {
+        justify-content: flex-start;
+    }
+
+    html.admin-mobile-cards #result_list .action-checkbox input {
+        width: 22px;
+        height: 22px;
+        margin: 0;
+    }
+}
+
+@media (min-width: 601px) and (max-width: 1024px) {
+    html.admin-mobile-cards #changelist .results {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    html.admin-mobile-cards #result_list {
+        min-width: 720px;
+    }
+}
+
+/* Tabular inlines become a stack of labeled fields. .empty-form stays hidden. */
+@media (max-width: 600px) {
+    html.admin-mobile-inlines .inline-related.tabular,
+    html.admin-mobile-inlines .inline-related.tabular div.wrapper {
+        overflow: visible;
+    }
+
+    html.admin-mobile-inlines .inline-group .tabular table,
+    html.admin-mobile-inlines .inline-group .tabular tbody {
+        display: block;
+        width: 100%;
+    }
+
+    html.admin-mobile-inlines .inline-group .tabular thead {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+    }
+
+    html.admin-mobile-inlines .inline-group .tabular tr.form-row:not(.empty-form),
+    html.admin-mobile-inlines .inline-group .tabular tr.row-form-errors,
+    html.admin-mobile-inlines .inline-group .tabular tr.add-row {
+        display: block;
+        width: auto;
+    }
+
+    html.admin-mobile-inlines .inline-group .tabular tr.form-row:not(.empty-form) {
+        margin: 0 0 12px;
+        padding: 4px 10px;
+        border: 1px solid var(--hairline-color);
+        border-radius: 4px;
+        background: var(--body-bg);
+    }
+
+    html.admin-mobile-inlines .inline-group .tabular tr.empty-form {
+        display: none;
+    }
+
+    html.admin-mobile-inlines .inline-group .tabular tr.form-row:not(.empty-form) > td,
+    html.admin-mobile-inlines .inline-group .tabular tr.add-row > td,
+    html.admin-mobile-inlines .inline-group .tabular tr.row-form-errors > td {
+        display: block;
+        width: auto;
+        padding: 8px 0;
+        white-space: normal;
+    }
+
+    html.admin-mobile-inlines .inline-group .tabular tr.has_original > td {
+        padding-top: 8px;
+    }
+
+    html.admin-mobile-inlines .inline-group .tabular tr.form-row:not(.empty-form) > td {
+        border-bottom: 1px solid var(--hairline-color);
+    }
+
+    html.admin-mobile-inlines .inline-group .tabular tr.form-row:not(.empty-form) > td:last-child {
+        border-bottom: 0;
+    }
+
+    html.admin-mobile-inlines .inline-group .tabular td.original:not(:has(a)),
+    html.admin-mobile-inlines .inline-group .tabular td.hidden {
+        display: none;
+    }
+
+    html.admin-mobile-inlines .inline-group .tabular td.original p {
+        position: static;
+        height: auto;
+        padding: 0;
+        overflow: visible;
+    }
+
+    html.admin-mobile-inlines .inline-group .tabular td::before {
+        content: attr(data-label);
+        display: block;
+        margin-bottom: 4px;
+        font-weight: 600;
+        text-align: start;
+        color: var(--body-quiet-color);
+    }
+
+    html.admin-mobile-inlines .inline-group .tabular td:not([data-label])::before,
+    html.admin-mobile-inlines .inline-group .tabular td.original::before,
+    html.admin-mobile-inlines .inline-group .tabular tr.add-row td::before,
+    html.admin-mobile-inlines .inline-group .tabular tr.row-form-errors td::before {
+        content: none;
+    }
+
+    html.admin-mobile-inlines .inline-group .tabular td input:not([type="checkbox"]):not([type="hidden"]):not([type="radio"]),
+    html.admin-mobile-inlines .inline-group .tabular td select,
+    html.admin-mobile-inlines .inline-group .tabular td textarea {
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+
+    html.admin-mobile-inlines .inline-group .tabular tr.add-row td a,
+    html.admin-mobile-inlines .inline-group .tabular .inline-deletelink {
+        display: flex;
+        align-items: center;
+        min-height: 44px;
+        font-size: 0.875rem;
+    }
+
+    html.admin-mobile-inlines .inline-group .tabular td.delete {
+        min-height: 44px;
+    }
+}
+
+@media (max-width: 600px) {
+    html.admin-mobile-sticky body:not(.login) form .submit-row:last-of-type {
+        position: sticky;
+        bottom: 0;
+        z-index: 40;
+        margin: 12px 0 0;
+        background: var(--body-bg);
+        border-top: 1px solid var(--hairline-color);
+        box-shadow: 0 -4px 16px rgb(0 0 0 / 8%);
+    }
+
+    html.admin-mobile-sticky body:not(.login) #content {
+        padding-bottom: 8px;
+    }
+}
+
+@media (max-width: 600px) {
+    html.admin-mobile-touch #content input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="submit"]):not([type="button"]):not([type="reset"]):not([type="image"]),
+    html.admin-mobile-touch #content select,
+    html.admin-mobile-touch #content textarea,
+    html.admin-mobile-touch #changelist-filter input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]),
+    html.admin-mobile-touch #changelist-filter select,
+    html.admin-mobile-touch .login input[type="text"],
+    html.admin-mobile-touch .login input[type="password"] {
+        font-size: 16px;
+        min-height: 44px;
+    }
+
+    html.admin-mobile-touch #content textarea {
+        min-height: 88px;
+    }
+
+    html.admin-mobile-touch #content input[type="checkbox"],
+    html.admin-mobile-touch #content input[type="radio"],
+    html.admin-mobile-touch #changelist-filter input[type="checkbox"] {
+        width: 1.25rem;
+        height: 1.25rem;
+        min-height: 1.25rem;
+        accent-color: var(--button-bg);
+    }
+
+    html.admin-mobile-touch .submit-row input,
+    html.admin-mobile-touch .submit-row a,
+    html.admin-mobile-touch .object-tools a,
+    html.admin-mobile-touch .paginator a,
+    html.admin-mobile-touch #toolbar input[type="submit"],
+    html.admin-mobile-touch .related-widget-wrapper > a {
+        min-height: 44px;
+        min-width: 44px;
+        box-sizing: border-box;
+    }
+
+    html.admin-mobile-touch .related-widget-wrapper > a {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* #toolbar #searchbar is more specific than a plain input rule. */
+    html.admin-mobile-touch #toolbar #searchbar,
+    html.admin-mobile-touch #changelist .actions select {
+        font-size: 16px;
+        min-height: 44px;
+        height: auto;
+    }
+
+    html.admin-mobile-touch .aligned .form-row {
+        padding-top: 10px;
+        padding-bottom: 10px;
+    }
+}
+
+html.admin-mobile-filters .admin-mobile-filter-toggle {
+    display: none;
+    appearance: none;
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 44px;
+    margin: 0 0 12px;
+    padding: 0 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background: var(--darkened-bg);
+    color: var(--body-fg);
+    font: inherit;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-align: start;
+    cursor: pointer;
+}
+
+html[data-theme="dark"] .admin-mobile-filter-toggle,
+html[data-theme="light"] .admin-mobile-filter-toggle {
+    background: var(--darkened-bg);
+    color: var(--body-fg);
+    border-color: var(--border-color);
+}
+
+@media (prefers-color-scheme: dark) {
+    html[data-theme="auto"] .admin-mobile-filter-toggle {
+        background: var(--darkened-bg);
+        color: var(--body-fg);
+        border-color: var(--border-color);
+    }
+}
+
+@media (max-width: 600px) {
+    html.admin-mobile-filters .admin-mobile-filter-toggle:not([hidden]) {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    html.admin-mobile-filters .admin-mobile-filter-toggle::after {
+        content: "";
+        width: 0.45rem;
+        height: 0.45rem;
+        margin-inline-start: 8px;
+        border-right: 2px solid var(--body-quiet-color);
+        border-bottom: 2px solid var(--body-quiet-color);
+        transform: rotate(45deg);
+    }
+
+    html.admin-mobile-filters .admin-mobile-filter-toggle[aria-expanded="true"]::after {
+        transform: rotate(-135deg);
+    }
+
+    /* Stock admin gives the sidebar order:1, which parks it under the table. */
+    html.admin-mobile-filters .admin-mobile-filter-toggle,
+    html.admin-mobile-filters #changelist-filter {
+        order: -1;
+        flex: 1 1 100%;
+        width: 100%;
+        margin: 0 0 12px;
+    }
+
+    html.admin-mobile-filters #changelist-filter {
+        display: none;
+        box-sizing: border-box;
+    }
+
+    html.admin-mobile-filters #changelist-filter.admin-mobile-open {
+        display: block;
+    }
+
+    html.admin-mobile-filters #changelist-filter a,
+    html.admin-mobile-filters #changelist-filter summary {
+        display: flex;
+        align-items: center;
+        min-height: 44px;
+    }
+
+    html.admin-mobile-filters #changelist-filter input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]),
+    html.admin-mobile-filters #changelist-filter select {
+        max-width: 100%;
+        box-sizing: border-box;
+        font-size: 16px;
+        min-height: 44px;
+    }
+}
+
+/* Direction-neutral cards. Logical edges so RTL does not flip the layout. */
+html[dir="rtl"].admin-mobile-cards #result_list tbody td,
+html[dir="rtl"].admin-mobile-cards #result_list tbody th,
+html[dir="ltr"].admin-mobile-cards #result_list tbody td,
+html[dir="ltr"].admin-mobile-cards #result_list tbody th {
+    text-align: end;
+}
+
+html.admin-mobile-cards .admin-mobile-sort,
+html.admin-mobile-cards .admin-mobile-select-all {
+    display: none;
+}
+
+@media (max-width: 600px) {
+    html.admin-mobile #header {
+        flex-wrap: wrap;
+        height: auto;
+        padding: 8px 12px;
+    }
+
+    html.admin-mobile #branding,
+    html.admin-mobile #user-tools {
+        float: none;
+        width: 100%;
+        max-width: 100%;
+    }
+
+    html.admin-mobile #user-tools {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 4px 8px;
+        margin-top: 4px;
+    }
+
+    html.admin-mobile #logout-form {
+        display: inline-flex;
+        margin: 0;
+    }
+
+    html.admin-mobile #user-tools a,
+    html.admin-mobile #logout-form button,
+    html.admin-mobile #user-tools button {
+        min-height: 44px;
+        padding: 8px 0;
+        background: transparent;
+        border: 0;
+        color: var(--header-link-color);
+        font: inherit;
+        cursor: pointer;
+    }
+
+    html.admin-mobile .breadcrumbs {
+        white-space: normal;
+        line-height: 1.45;
+        padding: 10px 12px;
+    }
+
+    /* Django hides both controls below 767px. Put the toggle back. */
+    html.admin-mobile #toggle-nav-sidebar {
+        display: flex;
+        position: sticky;
+        top: 0;
+        z-index: 60;
+        flex: 0 0 44px;
+        width: 44px;
+        min-width: 44px;
+        min-height: 44px;
+    }
+
+    html.admin-mobile #nav-sidebar {
+        display: block;
+        position: fixed;
+        z-index: 40;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        width: min(18rem, 86vw);
+        max-height: 100vh;
+        margin: 0;
+        transform: translateX(-105%);
+        visibility: hidden;
+        background: var(--body-bg);
+    }
+
+    html.admin-mobile .main.shifted #nav-sidebar {
+        transform: none;
+        left: 44px;
+        width: min(18rem, calc(100vw - 52px));
+        visibility: visible;
+    }
+
+    html[dir="rtl"].admin-mobile #nav-sidebar {
+        left: auto;
+        right: 0;
+        margin: 0;
+        transform: translateX(105%);
+    }
+
+    html[dir="rtl"].admin-mobile .main.shifted #nav-sidebar {
+        transform: none;
+        left: auto;
+        right: 44px;
+    }
+
+    html.admin-mobile #nav-filter {
+        box-sizing: border-box;
+        width: 100%;
+        min-height: 44px;
+        font-size: 16px;
+    }
+
+    html.admin-mobile #nav-sidebar a,
+    html.admin-mobile #nav-sidebar th,
+    html.admin-mobile #nav-sidebar td {
+        min-height: 44px;
+    }
+
+    html.admin-mobile body.login #container {
+        width: auto;
+        max-width: 420px;
+        margin-inline: auto;
+    }
+
+    html.admin-mobile body.login .submit-row input,
+    html.admin-mobile .submit-row input[type="submit"] {
+        width: 100%;
+        min-height: 44px;
+    }
+
+    html.admin-mobile ul.messagelist li {
+        word-break: break-word;
+    }
+
+    html.admin-mobile #content-main .module,
+    html.admin-mobile #content-main .module table {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    html.admin-mobile #content-main caption {
+        text-align: start;
+    }
+
+    /* Index and app index only. :has(caption) skips changelist and inlines. */
+    html.admin-mobile #content-main table:has(caption) tr {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px 12px;
+        align-items: center;
+        padding: 8px 0;
+        border-bottom: 1px solid var(--hairline-color);
+    }
+
+    html.admin-mobile #content-main table:has(caption) th,
+    html.admin-mobile #content-main table:has(caption) td {
+        display: block;
+        width: auto;
+        padding: 4px 0;
+    }
+
+    html.admin-mobile #content-main table:has(caption) th a,
+    html.admin-mobile #content-main table:has(caption) td a {
+        min-height: 44px;
+        display: inline-flex;
+        align-items: center;
+    }
+
+    html.admin-mobile .toplinks {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px 10px;
+        padding: 8px 0;
+    }
+
+    html.admin-mobile .toplinks a {
+        display: inline-flex;
+        align-items: center;
+        min-height: 44px;
+    }
+
+    html.admin-mobile #changelist .actions {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    html.admin-mobile #changelist .actions select,
+    html.admin-mobile #changelist .actions .button,
+    html.admin-mobile #changelist .actions button,
+    html.admin-mobile #changelist .paginator a,
+    html.admin-mobile #changelist .paginator input {
+        min-height: 44px;
+        font-size: 16px;
+    }
+
+    html.admin-mobile-cards .admin-mobile-sort,
+    html.admin-mobile-cards .admin-mobile-select-all {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px;
+        margin: 0 0 12px;
+    }
+
+    html.admin-mobile-cards .admin-mobile-sort a,
+    html.admin-mobile-cards .admin-mobile-select-all {
+        min-height: 44px;
+    }
+
+    html.admin-mobile-cards .admin-mobile-sort a {
+        display: inline-flex;
+        align-items: center;
+        padding: 0 8px;
+        border: 1px solid var(--hairline-color);
+        border-radius: 4px;
+        background: var(--darkened-bg);
+        color: var(--link-fg);
+    }
+
+    html.admin-mobile-cards .admin-mobile-select-all input {
+        width: 22px;
+        height: 22px;
+    }
+
+    html.admin-mobile-cards #result_list tbody input:not([type="checkbox"]):not([type="hidden"]),
+    html.admin-mobile-cards #result_list tbody select {
+        width: auto;
+        max-width: 58%;
+        min-height: 44px;
+        font-size: 16px;
+        box-sizing: border-box;
+    }
+
+    html.admin-mobile-cards #change-history table,
+    html.admin-mobile-cards #change-history tbody,
+    html.admin-mobile-cards table.model,
+    html.admin-mobile-cards table.model tbody {
+        display: block;
+        width: 100%;
+    }
+
+    html.admin-mobile-cards #change-history thead,
+    html.admin-mobile-cards table.model thead {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+    }
+
+    html.admin-mobile-cards #change-history tbody tr,
+    html.admin-mobile-cards table.model tbody tr {
+        display: block;
+        margin: 0 0 12px;
+        padding: 4px 12px;
+        border: 1px solid var(--hairline-color);
+        border-radius: 4px;
+        background: var(--body-bg);
+    }
+
+    html.admin-mobile-cards #change-history tbody td,
+    html.admin-mobile-cards #change-history tbody th,
+    html.admin-mobile-cards table.model tbody td,
+    html.admin-mobile-cards table.model tbody th {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        min-height: 44px;
+        align-items: center;
+        border-bottom: 1px solid var(--hairline-color);
+        text-align: end;
+    }
+
+    html.admin-mobile-cards #change-history tbody td::before,
+    html.admin-mobile-cards #change-history tbody th::before,
+    html.admin-mobile-cards table.model tbody td::before,
+    html.admin-mobile-cards table.model tbody th::before {
+        content: attr(data-label);
+        flex: 0 0 42%;
+        font-weight: 600;
+        text-align: start;
+        color: var(--body-quiet-color);
+    }
+
+    html.admin-mobile .errornote,
+    html.admin-mobile .errorlist,
+    html.admin-mobile .help,
+    html.admin-mobile .readonly,
+    html.admin-mobile p.file-upload {
+        max-width: 100%;
+        overflow-wrap: anywhere;
+    }
+
+    html.admin-mobile fieldset.collapse summary,
+    html.admin-mobile fieldset.collapse h2,
+    html.admin-mobile fieldset.collapsed h2,
+    html.admin-mobile details > summary {
+        display: flex;
+        align-items: center;
+        min-height: 44px;
+    }
+
+    html.admin-mobile .related-widget-wrapper {
+        flex-wrap: wrap;
+        max-width: 100%;
+        gap: 4px;
+    }
+
+    html.admin-mobile .related-widget-wrapper a,
+    html.admin-mobile a.related-lookup {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 44px;
+        min-height: 44px;
+    }
+
+    html.admin-mobile .vForeignKeyRawIdAdminField,
+    html.admin-mobile .select2-container {
+        width: 100% !important;
+        max-width: 100%;
+        min-height: 44px;
+        box-sizing: border-box;
+    }
+
+    html.admin-mobile .select2-container .select2-selection--single {
+        min-height: 44px;
+    }
+
+    html.admin-mobile .selector {
+        width: 100%;
+        flex-direction: column;
+    }
+
+    html.admin-mobile .selector-available,
+    html.admin-mobile .selector-chosen {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    html.admin-mobile .selector select {
+        width: 100%;
+        min-height: 8rem;
+    }
+
+    html.admin-mobile .selector-chooser,
+    html.admin-mobile .selector-chooser li {
+        min-height: 44px;
+    }
+
+    html.admin-mobile ul.radiolist label,
+    html.admin-mobile .checkbox-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-height: 44px;
+    }
+
+    html.admin-mobile p.file-upload,
+    html.admin-mobile .clearable-file-input {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    html.admin-mobile .clearable-file-input label,
+    html.admin-mobile p.file-upload a {
+        min-height: 44px;
+        display: inline-flex;
+        align-items: center;
+    }
+
+    html.admin-mobile .inline-group[data-inline-type="stacked"] .inline-related {
+        margin-bottom: 12px;
+    }
+
+    html.admin-mobile .inline-group[data-inline-type="stacked"] h3,
+    html.admin-mobile .inline-group[data-inline-type="stacked"] .inline-deletelink {
+        min-height: 44px;
+    }
+
+    html.admin-mobile .inline-group[data-inline-type="stacked"] input:not([type="checkbox"]):not([type="hidden"]),
+    html.admin-mobile .inline-group[data-inline-type="stacked"] textarea,
+    html.admin-mobile .inline-group[data-inline-type="stacked"] select {
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+
+    html.admin-mobile .object-tools {
+        float: none;
+        margin: 0 0 12px;
+    }
+
+    html.admin-mobile .object-tools li,
+    html.admin-mobile .object-tools a {
+        width: 100%;
+    }
+
+    html.admin-mobile body.delete-confirmation #content li {
+        margin: 4px 0;
+        min-height: 44px;
+    }
+
+    html.admin-mobile body.delete-confirmation #content a {
+        display: inline-flex;
+        align-items: center;
+        min-height: 44px;
+        overflow-wrap: anywhere;
+    }
+
+    html.admin-mobile body.popup #container,
+    html.admin-mobile body.popup #content {
+        min-width: 0;
+        width: auto;
+    }
+
+    html.admin-mobile [id^="calendarlink"],
+    html.admin-mobile [id^="clocklink"] {
+        min-width: 44px;
+        min-height: 44px;
+    }
+
+    html.admin-mobile .calendarbox,
+    html.admin-mobile .clockbox {
+        width: min(20rem, calc(100vw - 24px));
+        max-width: calc(100vw - 24px);
+    }
+
+    html.admin-mobile .calendar td,
+    html.admin-mobile .calendar td a,
+    html.admin-mobile .timelist a,
+    html.admin-mobile .calendar-cancel,
+    html.admin-mobile .calendarnav-previous,
+    html.admin-mobile .calendarnav-next {
+        min-height: 36px;
+        min-width: 32px;
+    }
+
+    html.admin-mobile .timelist a,
+    html.admin-mobile .calendar-cancel a,
+    html.admin-mobile .calendar-shortcuts a {
+        min-height: 44px;
+        display: inline-flex;
+        align-items: center;
+    }
+}

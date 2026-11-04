@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - python: "3.10"
+            django: "Django>=4.2,<4.3"
+          - python: "3.12"
+            django: "Django>=4.2,<4.3"
+          - python: "3.11"
+            django: "Django>=5.2,<5.3"
+          - python: "3.12"
+            django: "Django>=5.2,<5.3"
+          - python: "3.12"
+            django: "Django>=6.0,<6.1"
+          - python: "3.13"
+            django: "Django>=6.0,<6.1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - run: python -m pip install -e ".[dev]" "${{ matrix.django }}"
+      - run: ruff check .
+      - run: pytest -m "not playwright"
+
+  playwright:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install -e ".[dev]" "Django>=5.2,<5.3"
+      - run: python -m playwright install --with-deps chromium
+      - run: pytest -m playwright
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: admin-mobile-screenshots
+          path: docs/screenshots/*.png
