@@ -1337,6 +1337,105 @@ html[data-theme="auto"].admin-mobile {
         border-radius: var(--am-radius);
         border: 1px solid var(--am-line);
     }
+
+    /* Changelist: one 16px page inset, 8px between rows, identical select padding. */
+    html.admin-mobile body.change-list #content {
+        padding: var(--am-pad);
+    }
+
+    html.admin-mobile body.change-list #content h1 {
+        margin: 0 0 var(--am-space);
+    }
+
+    html.admin-mobile body.change-list #toolbar,
+    html.admin-mobile body.change-list #changelist .actions,
+    html.admin-mobile body.change-list .toplinks,
+    html.admin-mobile body.change-list .admin-mobile-sort,
+    html.admin-mobile body.change-list .admin-mobile-select-all,
+    html.admin-mobile body.change-list .admin-mobile-filter-toggle {
+        width: 100%;
+        max-width: 100%;
+        margin: 0 0 var(--am-space);
+        box-sizing: border-box;
+    }
+
+    html.admin-mobile body.change-list .admin-mobile-filter-toggle {
+        padding: 0 var(--am-pad);
+    }
+
+    html.admin-mobile body.change-list .toplinks,
+    html.admin-mobile body.change-list .admin-mobile-select-all,
+    html.admin-mobile body.change-list #changelist .actions .action-counter {
+        padding: 0;
+        margin-left: 0;
+        margin-right: 0;
+    }
+
+    html.admin-mobile body.change-list #changelist .actions {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: center;
+        gap: var(--am-space);
+    }
+
+    html.admin-mobile body.change-list #changelist .actions label {
+        display: block;
+        grid-column: 1;
+        grid-row: 1;
+        width: 100%;
+        margin: 0;
+        font-size: 0;
+    }
+
+    html.admin-mobile body.change-list #changelist .actions select,
+    html.admin-mobile body.change-list .admin-mobile-sort select {
+        display: block;
+        width: 100%;
+        height: var(--am-tap);
+        min-height: var(--am-tap);
+        margin: 0;
+        padding: 0 var(--am-pad);
+        font-size: 16px;
+        box-sizing: border-box;
+    }
+
+    html.admin-mobile body.change-list #changelist .actions .button,
+    html.admin-mobile body.change-list #changelist .actions button {
+        grid-column: 2;
+        grid-row: 1;
+        width: auto;
+        height: var(--am-tap);
+        margin: 0;
+        padding: 0 var(--am-pad);
+    }
+
+    html.admin-mobile body.change-list #changelist .actions .action-counter {
+        grid-column: 1 / -1;
+        grid-row: 2;
+        margin: 0;
+        padding: 0;
+    }
+
+    html.admin-mobile body.change-list .toplinks {
+        align-items: center;
+        gap: var(--am-space);
+    }
+
+    html.admin-mobile body.change-list .admin-mobile-select-all {
+        min-height: var(--am-tap);
+        padding: 0;
+    }
+
+    html.admin-mobile-cards body.change-list #result_list tbody tr {
+        margin: 0;
+        padding: var(--am-pad);
+    }
+
+    html.admin-mobile-cards body.change-list #result_list .action-checkbox {
+        min-height: 0;
+        padding: 0 0 var(--am-space);
+        border: 0;
+    }
 }
 
 @keyframes admin-mobile-spin {
