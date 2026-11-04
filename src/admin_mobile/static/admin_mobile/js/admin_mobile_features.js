@@ -284,9 +284,14 @@
             localStorage.setItem("admin-mobile-favorites", JSON.stringify(items.slice(0, 12)));
             button.textContent = "Saved";
         });
+        var changelist = document.getElementById("changelist");
         var toolbar = document.getElementById("toolbar");
         if (toolbar) {
-            toolbar.appendChild(button);
+            toolbar.insertAdjacentElement("afterend", button);
+            return;
+        }
+        if (changelist) {
+            changelist.insertAdjacentElement("afterbegin", button);
             return;
         }
         var tools = document.querySelector(".object-tools");
@@ -366,10 +371,14 @@
             bar.appendChild(runClone);
         }
         document.body.appendChild(bar);
+        var actionRows = document.querySelectorAll("#changelist .actions");
         function refresh() {
             var selected = form.querySelectorAll("input.action-select:checked, .action-checkbox input:checked").length;
             label.textContent = "Selected " + selected;
             bar.hidden = selected === 0;
+            Array.prototype.forEach.call(actionRows, function (row) {
+                row.classList.toggle("admin-mobile-actions-delegated", selected > 0);
+            });
         }
         form.addEventListener("change", refresh);
         refresh();

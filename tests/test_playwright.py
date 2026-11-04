@@ -359,9 +359,28 @@ def test_builtin_admin_surfaces(
         }"""
     )
     assert aligned is True
+    save_edge = page.evaluate(
+        """() => {
+            const save = document.querySelector('.admin-mobile-save-model');
+            const select = document.querySelector('#changelist .actions select');
+            const run = document.querySelector('#changelist .actions button');
+            const saveBox = save.getBoundingClientRect();
+            const selectBox = select.getBoundingClientRect();
+            const runBox = run.getBoundingClientRect();
+            return Math.abs(saveBox.left - selectBox.left) <= 2
+                && Math.abs(saveBox.right - runBox.right) <= 2
+                && saveBox.height >= 40;
+        }"""
+    )
+    assert save_edge is True
+    expect(page.locator("#changelist .actions select")).to_be_visible()
+    expect(page.locator(".admin-mobile-bulkbar")).to_be_hidden()
+    _pair(page, "payments-375.png")
     page.locator("#result_list .action-checkbox input").first.check()
     bar = page.locator(".admin-mobile-bulkbar")
     expect(bar).to_be_visible()
+    expect(page.locator("#changelist .actions select")).to_be_hidden()
+    expect(page.locator("#admin-mobile-select-all")).to_be_visible()
     row_fit = bar.evaluate(
         """element => {
             const select = element.querySelector('select');
@@ -381,7 +400,7 @@ def test_builtin_admin_surfaces(
         "element => getComputedStyle(element).backgroundColor"
     )
     assert tint != "rgb(228, 228, 228)"
-    _pair(page, "payments-375.png")
+    _pair(page, "payments-selected-375.png")
 
     page.goto(f"{base_url}{catalog['edition']}")
     expect(page.locator("input[name='series']")).to_be_visible()

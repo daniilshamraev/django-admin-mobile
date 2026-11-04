@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.6
+
+- “Save this list” is a full-width 44px control on the same 16px edge as the rest of the changelist.
+- While the sticky bulk bar is open, the top action menu and Run are hidden. Select all and the count stay. With JavaScript off, that top row stays in place.
+
 ## 0.2.5
 
 - A selected changelist card uses a light accent tint and outline instead of Django’s flat selected-row fill.

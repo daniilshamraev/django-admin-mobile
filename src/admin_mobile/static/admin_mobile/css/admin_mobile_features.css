@@ -1449,6 +1449,36 @@ html[data-theme="auto"].admin-mobile {
         margin: 0 0 var(--am-space);
     }
 
+    html.admin-mobile body.change-list #toolbar {
+        padding: 0;
+    }
+
+    html.admin-mobile body.change-list .admin-mobile-save-model {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        align-self: stretch;
+        flex: 1 1 100%;
+        width: 100%;
+        max-width: 100%;
+        height: var(--am-tap);
+        min-height: var(--am-tap);
+        margin: 0 0 var(--am-space);
+        padding: 0 var(--am-pad);
+        border: 0;
+        border-radius: var(--am-radius);
+        box-sizing: border-box;
+        background: var(--button-bg);
+        color: var(--button-fg);
+    }
+
+    html.admin-mobile body.change-list #changelist .actions.admin-mobile-actions-delegated > label:not(.admin-mobile-select-all),
+    html.admin-mobile body.change-list #changelist .actions.admin-mobile-actions-delegated > .button,
+    html.admin-mobile body.change-list #changelist .actions.admin-mobile-actions-delegated > button,
+    html.admin-mobile body.change-list #changelist .actions.admin-mobile-actions-delegated > input[type="submit"] {
+        display: none;
+    }
+
     html.admin-mobile body.change-list #toolbar,
     html.admin-mobile body.change-list #changelist .actions,
     html.admin-mobile body.change-list .toplinks,
