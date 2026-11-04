@@ -33,6 +33,11 @@ classifiers = [
 ]
 dependencies = ["Django>=4.2"]
 
+[project.urls]
+Homepage = "https://github.com/daniilshamraev/django-admin-mobile"
+Repository = "https://github.com/daniilshamraev/django-admin-mobile"
+Issues = "https://github.com/daniilshamraev/django-admin-mobile/issues"
+
 [project.optional-dependencies]
 dev = [
     "pytest>=8.3",
