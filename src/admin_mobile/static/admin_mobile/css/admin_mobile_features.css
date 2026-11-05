@@ -2256,6 +2256,11 @@ html[data-theme="auto"].admin-mobile {
 }
 
 @media (min-width: 601px) {
+    html.admin-mobile .admin-mobile-slide,
+    html.admin-mobile .admin-mobile-slide-sheet {
+        display: none;
+    }
+
     html.admin-mobile-filter-sheet .admin-mobile-filter-chrome,
     html.admin-mobile-filter-sheet .admin-mobile-filter-foot,
     html.admin-mobile-filter-sheet .admin-mobile-filter-search,

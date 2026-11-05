@@ -195,6 +195,33 @@ def _login(page: Page, base_url: str) -> None:
     expect(page.locator("#header")).to_be_visible()
 
 
+def test_slide_confirm_stays_off_desktop(
+    page: Page,
+    live_server: object,
+    catalog: dict[str, str],
+) -> None:
+    base_url = str(live_server.url)
+    page.set_viewport_size({"width": 1280, "height": 800})
+    _login(page, base_url)
+    page.goto(f"{base_url}{catalog['delete']}")
+    expect(page.locator("input[type='submit']")).to_be_visible()
+    expect(page.locator(".admin-mobile-slide")).to_have_count(0)
+    prevented = page.evaluate(
+        """() => {
+          const form = document.querySelector("body.delete-confirmation form");
+          if (!form) {
+            return true;
+          }
+          const event = new Event("submit", { bubbles: true, cancelable: true });
+          form.dispatchEvent(event);
+          return event.defaultPrevented;
+        }"""
+    )
+    assert prevented is False
+    expect(page.locator(".admin-mobile-slide")).to_have_count(0)
+    expect(page.locator("input[type='submit']")).to_be_visible()
+
+
 def test_filter_sidebar_accepts_third_party_markup(page: Page) -> None:
     page.set_viewport_size({"width": 375, "height": 812})
     page.set_content(FILTER_FIXTURE)

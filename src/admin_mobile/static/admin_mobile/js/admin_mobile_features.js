@@ -872,7 +872,9 @@
             var deletePage = document.body.classList.contains("delete-confirmation");
             var action = form.querySelector("[name=action]");
             var actionName = action ? action.value : "";
-            var needsSlide = cfg.swipeConfirm && (deletePage || (cfg.swipeConfirmActions || []).indexOf(actionName) !== -1);
+            var needsSlide = cfg.swipeConfirm && mobile() && (
+                deletePage || (cfg.swipeConfirmActions || []).indexOf(actionName) !== -1
+            );
             var needsUndo = cfg.undoDelete && deletePage && form.querySelector("input[name=post]");
             if (needsSlide && form.dataset.adminMobileSlideOk !== "1") {
                 event.preventDefault();
@@ -895,7 +897,11 @@
     }
 
     function openSlide(done) {
-        var panel = sheet("admin-mobile-sheet");
+        if (!mobile()) {
+            done();
+            return;
+        }
+        var panel = sheet("admin-mobile-sheet admin-mobile-slide-sheet");
         panel.hidden = false;
         var control = document.createElement("div");
         control.className = "admin-mobile-slide";

@@ -208,8 +208,8 @@ MIT. Copyright (c) 2026 Daniil Shamraev. See [LICENSE](LICENSE).
 
 ## Publishing
 
-0.1.0 is already on PyPI. This tree is 0.2.8 and is not published from here.
+0.1.0 is already on PyPI. This tree is 0.2.9 and is not published from here.
 
-1. Tag `0.2.8` when you want a release.
+1. Tag `0.2.9` when you want a release.
 2. Build: `uv build`.
 3. Publish: `uv publish` with a PyPI token.

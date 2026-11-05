@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.9
+
+- “Slide to confirm” stays on the phone delete page. On a desktop-width window it is not shown, and the native Yes/No buttons submit as usual.
+
 ## 0.2.8
 
 - Object history on a phone is a vertical timeline, newest first, grouped by day. Added, changed, and deleted entries use their own color and icon. Changed fields are chips. The entry count sits in the page footer.
