@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.10
+
+- A camera photo is copied into the named file input before the form is saved. Saving while compression is still running sends that photo instead of an empty file. If the browser cannot decode it, the original file is kept. The extra camera thumbnail is gone. A new photo unticks that field’s clear checkbox.
+
 ## 0.2.9
 
 - “Slide to confirm” stays on the phone delete page. On a desktop-width window it is not shown, and the native Yes/No buttons submit as usual.
