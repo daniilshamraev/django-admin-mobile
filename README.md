@@ -120,7 +120,7 @@ ADMIN_MOBILE = {
 | `STICKY_ACTIONS` | `True` | `Selected N`, the action menu, and Run stick above the tab bar. While that bar is open, the top action menu is hidden. |
 | `UNSAVED_GUARD` | `True` | `beforeunload` when a change form is dirty. |
 | `FORM_DRAFTS` | `False` | Autosave add-form text fields in `localStorage` and offer restore. Passwords and files are skipped. |
-| `CAMERA_CAPTURE` | `True` | Camera button on file inputs, with a preview. |
+| `CAMERA_CAPTURE` | `True` | Camera button on file inputs. The photo is copied into the named input before save. The widget or native control is the only preview. |
 | `CAMERA_COMPRESS` | `True` | Downscale camera images to 1600px JPEG in the browser. |
 | `MOBILE_KEYBOARDS` | `True` | `inputmode` for integers, decimals, email, url, and phone-like names. |
 | `FORM_NAVIGATOR` | `True` | Sections button that jumps to fieldsets and inlines. |
@@ -208,8 +208,8 @@ MIT. Copyright (c) 2026 Daniil Shamraev. See [LICENSE](LICENSE).
 
 ## Publishing
 
-0.1.0 is already on PyPI. This tree is 0.2.9 and is not published from here.
+0.1.0 is already on PyPI. This tree is 0.2.10 and is not published from here.
 
-1. Tag `0.2.9` when you want a release.
+1. Tag `0.2.10` when you want a release.
 2. Build: `uv build`.
 3. Publish: `uv publish` with a PyPI token.

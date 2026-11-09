@@ -1156,83 +1156,280 @@
         search.focus();
     }
 
-    function initCamera() {
-        if (!cfg.camera || !mobile()) {
+    var cameraFields = [];
+    var cameraSubmitBound = false;
+
+    function releaseClear(input) {
+        if (!input.name) {
             return;
         }
-        document.querySelectorAll("input[type=file]").forEach(function (input) {
-            if (input.dataset.adminMobileCamera === "1") {
+        var clearName = input.name + "-clear";
+        var boxes = [];
+        function add(node) {
+            if (!node) {
                 return;
             }
-            input.dataset.adminMobileCamera = "1";
-            var camera = document.createElement("input");
-            camera.type = "file";
-            camera.accept = "image/*";
-            camera.capture = "environment";
-            camera.hidden = true;
-            var button = document.createElement("button");
-            button.type = "button";
-            button.className = "button";
-            button.textContent = "Camera";
-            button.addEventListener("click", function () { camera.click(); });
-            var preview = document.createElement("img");
-            preview.className = "admin-mobile-thumb";
-            preview.alt = "";
-            preview.hidden = true;
-            function show(file) {
-                if (!file || file.type.indexOf("image/") !== 0) {
-                    return;
-                }
-                var reader = new FileReader();
-                reader.onload = function () {
-                    preview.src = String(reader.result || "");
-                    preview.hidden = false;
-                };
-                reader.readAsDataURL(file);
+            if (typeof node.length === "number" && node.type === undefined) {
+                Array.prototype.forEach.call(node, add);
+                return;
             }
-            function assign(file) {
-                var transfer = new DataTransfer();
-                transfer.items.add(file);
-                input.files = transfer.files;
-                show(file);
+            if (node.type === "checkbox" && boxes.indexOf(node) === -1) {
+                boxes.push(node);
             }
-            camera.addEventListener("change", function () {
-                var file = camera.files && camera.files[0];
-                if (!file) {
+        }
+        if (input.form && input.form.elements) {
+            add(input.form.elements.namedItem(clearName));
+        }
+        var root = input.closest(".iuw-root, .clearable-file-input");
+        if (root) {
+            Array.prototype.forEach.call(root.querySelectorAll("input[type=checkbox]"), function (box) {
+                if (box.name === clearName) {
+                    add(box);
+                }
+            });
+        }
+        boxes.forEach(function (box) {
+            box.checked = false;
+        });
+    }
+
+    function showCameraError(entry) {
+        if (!entry.error) {
+            entry.error = document.createElement("p");
+            entry.error.className = "admin-mobile-camera-error";
+            entry.error.setAttribute("role", "alert");
+            entry.button.insertAdjacentElement("afterend", entry.error);
+        }
+        entry.error.textContent = "Could not attach this photo.";
+    }
+
+    function clearCameraError(entry) {
+        if (!entry.error) {
+            return;
+        }
+        entry.error.remove();
+        entry.error = null;
+    }
+
+    function assignCameraFile(entry, file) {
+        if (!file) {
+            throw new Error("missing file");
+        }
+        var transfer = new DataTransfer();
+        transfer.items.add(file);
+        entry.input.files = transfer.files;
+        if (!entry.input.files || !entry.input.files.length) {
+            throw new Error("unassigned");
+        }
+        releaseClear(entry.input);
+        // ImageUploaderWidget listens on document for a bubbling change and
+        // reads the first file input inside .iuw-root.
+        entry.input.dispatchEvent(new Event("change", { bubbles: true }));
+        clearCameraError(entry);
+    }
+
+    function compressImage(file) {
+        return new Promise(function (resolve, reject) {
+            var url = URL.createObjectURL(file);
+            var image = new Image();
+            var settled = false;
+            var timer = window.setTimeout(function () {
+                fail(new Error("decode"));
+            }, 8000);
+            function finish(failed, value) {
+                if (settled) {
                     return;
                 }
-                if (!cfg.compress || file.type.indexOf("image/") !== 0) {
-                    assign(file);
+                settled = true;
+                window.clearTimeout(timer);
+                URL.revokeObjectURL(url);
+                if (failed) {
+                    reject(value);
                     return;
                 }
-                var image = new Image();
-                image.onload = function () {
-                    var scale = Math.min(1, 1600 / Math.max(image.width, image.height));
+                resolve(value);
+            }
+            function fail(error) {
+                finish(true, error);
+            }
+            image.onload = function () {
+                if (settled) {
+                    return;
+                }
+                try {
+                    var width = image.naturalWidth || image.width;
+                    var height = image.naturalHeight || image.height;
+                    var canBlob = typeof HTMLCanvasElement !== "undefined"
+                        && typeof HTMLCanvasElement.prototype.toBlob === "function";
+                    if (!width || !height || !canBlob) {
+                        finish(false, file);
+                        return;
+                    }
+                    var scale = Math.min(1, 1600 / Math.max(width, height));
                     var canvas = document.createElement("canvas");
-                    canvas.width = Math.max(1, Math.round(image.width * scale));
-                    canvas.height = Math.max(1, Math.round(image.height * scale));
+                    canvas.width = Math.max(1, Math.round(width * scale));
+                    canvas.height = Math.max(1, Math.round(height * scale));
                     var context = canvas.getContext("2d");
-                    if (!context) {
-                        assign(file);
+                    if (!context || typeof canvas.toBlob !== "function") {
+                        finish(false, file);
                         return;
                     }
                     context.drawImage(image, 0, 0, canvas.width, canvas.height);
                     canvas.toBlob(function (blob) {
                         if (!blob) {
-                            assign(file);
+                            finish(false, file);
                             return;
                         }
-                        assign(new File([blob], "capture.jpg", { type: "image/jpeg" }));
+                        finish(false, new File([blob], "capture.jpg", { type: "image/jpeg" }));
                     }, "image/jpeg", 0.8);
-                };
-                image.src = URL.createObjectURL(file);
+                } catch (error) {
+                    fail(error);
+                }
+            };
+            image.onerror = function () {
+                fail(new Error("decode"));
+            };
+            image.src = url;
+        });
+    }
+
+    function bindCamera(input) {
+        input.dataset.adminMobileCamera = "1";
+        var camera = document.createElement("input");
+        camera.type = "file";
+        camera.accept = "image/*";
+        camera.capture = "environment";
+        camera.hidden = true;
+        camera.dataset.adminMobileCameraSource = "1";
+        // Nameless and after the real input. A name would be posted, and
+        // ImageUploaderWidget always uses the first file input in .iuw-root.
+        camera.removeAttribute("name");
+        var button = document.createElement("button");
+        button.type = "button";
+        button.className = "button";
+        button.textContent = "Camera";
+        button.addEventListener("click", function () {
+            camera.click();
+        });
+        var entry = {
+            input: input,
+            button: button,
+            pending: null,
+            generation: 0,
+            error: null
+        };
+        cameraFields.push(entry);
+        input.addEventListener("change", function (event) {
+            if (!event.isTrusted) {
+                return;
+            }
+            entry.generation += 1;
+            entry.pending = null;
+        });
+        camera.addEventListener("change", function (event) {
+            event.stopPropagation();
+            var file = camera.files && camera.files[0];
+            if (!file) {
+                return;
+            }
+            var ticket = ++entry.generation;
+            function commit(preferred) {
+                if (ticket !== entry.generation || entry.pending !== file) {
+                    return;
+                }
+                try {
+                    assignCameraFile(entry, preferred);
+                    entry.pending = null;
+                } catch (error) {
+                    if (preferred !== file) {
+                        commit(file);
+                        return;
+                    }
+                    showCameraError(entry);
+                }
+            }
+            if (!cfg.compress || !file.type || file.type.indexOf("image/") !== 0) {
+                entry.pending = file;
+                commit(file);
+                return;
+            }
+            entry.pending = file;
+            compressImage(file).then(function (ready) {
+                commit(ready || file);
+            }).catch(function () {
+                commit(file);
             });
-            input.addEventListener("change", function () {
-                show(input.files && input.files[0]);
-            });
-            input.insertAdjacentElement("afterend", preview);
-            input.insertAdjacentElement("afterend", button);
-            input.insertAdjacentElement("afterend", camera);
+        });
+        input.insertAdjacentElement("afterend", button);
+        input.insertAdjacentElement("afterend", camera);
+    }
+
+    function cancelCameraDrop(event) {
+        var target = event.target;
+        if (!target || !target.closest) {
+            return;
+        }
+        var dropped = event.dataTransfer && event.dataTransfer.files;
+        if (!dropped || !dropped.length) {
+            return;
+        }
+        var root = target.closest(".iuw-root, .form-row");
+        if (!root) {
+            return;
+        }
+        cameraFields.forEach(function (entry) {
+            if (!root.contains(entry.input)) {
+                return;
+            }
+            entry.generation += 1;
+            entry.pending = null;
+        });
+    }
+
+    function flushCameraSubmit(event) {
+        var form = event.target;
+        if (!(form instanceof HTMLFormElement)) {
+            return;
+        }
+        // The POST body is built after this event. Copy any photo still
+        // waiting on decode or canvas so an empty ImageField cannot be saved.
+        var blocked = false;
+        cameraFields.forEach(function (entry) {
+            if (!entry.pending || entry.input.form !== form || !entry.input.isConnected) {
+                return;
+            }
+            var file = entry.pending;
+            entry.generation += 1;
+            try {
+                assignCameraFile(entry, file);
+                entry.pending = null;
+            } catch (error) {
+                blocked = true;
+                showCameraError(entry);
+            }
+        });
+        if (blocked) {
+            event.preventDefault();
+        }
+    }
+
+    function initCamera() {
+        if (!cfg.camera || !mobile()) {
+            return;
+        }
+        if (!cameraSubmitBound) {
+            document.addEventListener("submit", flushCameraSubmit, true);
+            document.addEventListener("drop", cancelCameraDrop, true);
+            cameraSubmitBound = true;
+        }
+        document.querySelectorAll("input[type=file]").forEach(function (input) {
+            if (input.dataset.adminMobileCamera === "1" || input.dataset.adminMobileCameraSource === "1") {
+                return;
+            }
+            if (!input.name || input.closest(".empty-form")) {
+                return;
+            }
+            bindCamera(input);
         });
     }
 
@@ -1311,9 +1508,13 @@
         initCamera();
         initToasts();
         initServiceWorker();
+        document.addEventListener("formset:added", function () {
+            initCamera();
+        });
         document.addEventListener("admin-mobile:rows-added", function () {
             applyCardConfig();
             initSwipe();
+            initCamera();
         });
     });
 })();

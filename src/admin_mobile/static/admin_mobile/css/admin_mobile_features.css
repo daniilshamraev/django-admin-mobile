@@ -1844,6 +1844,12 @@ html[data-theme="auto"].admin-mobile {
         border: 1px solid var(--am-line);
     }
 
+    html.admin-mobile .admin-mobile-camera-error {
+        margin: var(--am-space) 0 0;
+        color: var(--error-fg, var(--body-fg));
+        font-size: 16px;
+    }
+
     /* Changelist: one 16px page inset, 8px between rows, identical select padding. */
     html.admin-mobile body.change-list #content {
         padding: var(--am-pad);
